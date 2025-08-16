@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>لوحة تحكم الأدمن - لعبة الحظ</title>
+    <!-- نفس ستايل اللعبة أو نسخ من index.html -->
+</head>
+<body>
+<div class="admin-panel">
+    <h3>👑 لوحة تحكم الأدمن</h3>
+    <form id="userForm" onsubmit="return false;">
+        <input type="text" id="adminUserId" placeholder="معرف المستخدم (userId)">
+        <input type="number" min="0" id="attemptsInput" placeholder="عدد المحاولات">
+        <button onclick="setAttempts()">تعيين المحاولات</button>
+        <button onclick="restoreAttempt()">إرجاع محاولة (1)</button>
+        <button onclick="resetAttempts()">تصفير المحاولات (0)</button>
+    </form>
+    <div class="msg" id="msg"></div>
+    <div class="users-list" id="usersList"></div>
+</div>
+<script>
+// ... الكود الخاص بإدارة المستخدمين كما في الردود السابقة ...
+</script>
+</body>
+</html>
