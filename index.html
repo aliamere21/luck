@@ -59,16 +59,13 @@
         .player-car { width: 48px; height: 76px; position: absolute; bottom: 95px; left: 50%; transform: translateX(-50%); background: linear-gradient(45deg, var(--car-color), #ff6666, var(--car-color)); border-radius: 25px 25px 8px 8px; box-shadow: 0 0 18px #f33a; z-index: 15; cursor: grab; border: 2px solid #fff3;}
         .player-car:active { cursor: grabbing;}
         .player-car::before { content: attr(data-emoji); position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 33px; filter: drop-shadow(0 0 3px #0004);}
-        .obstacle-car, .account-item, .powerup { width: 40px; height: 65px; position: absolute; z-index: 10; transition: all 0.18s;}
-        .obstacle-car { background: linear-gradient(45deg, #888, #333, #666); border-radius: 20px 20px 5px 5px; border: 1px solid #444;}
+        .obstacle-car { width: 40px; height: 65px; position: absolute; z-index: 10; background: linear-gradient(45deg, #888, #333, #666); border-radius: 20px 20px 5px 5px; border: 1px solid #444;}
         .obstacle-car::before { content: '🚙'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 27px;}
-        .account-item, .powerup { display: flex; align-items: center; justify-content: center; font-size: 23px; border-radius: 50%; border: 2px solid #fff1;}
-        .powerup { background: linear-gradient(45deg, #00ff88, #00cc6a); box-shadow: 0 0 13px #0f8a; width: 38px; height: 38px; font-size: 20px;}
+        .account-item { width: 44px; height: 44px; position: absolute; z-index: 12; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 2px solid #fff2; background: #fff;}
+        .account-pic { width: 36px; height: 36px; border-radius: 50%; background: #fafafc; box-shadow: 0 2px 8px #0002;}
+        .account-label { position: absolute; bottom: -18px; left: 50%; transform: translateX(-50%); font-size: 12px; color: #eee; background: #222b; border-radius: 8px; padding: 0 6px;}
+        .powerup { width: 38px; height: 38px; position: absolute; z-index: 13; border-radius: 50%; background: linear-gradient(45deg, #00ff88, #00cc6a); display: flex; align-items: center; justify-content: center; font-size: 20px; border: 2px solid #fff1; }
         .high-score-badge { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); background: linear-gradient(45deg, #ffd700, #ffed4a); color: #333; padding: 4px 13px; border-radius: 13px; font-weight: bold; font-size: 13px; z-index: 26; display: none;}
-        .settings-btn { position: absolute; bottom: 90px; left: 10px; border: none; background: var(--score-bg); color: #fff; border-radius: 18px; padding: 8px 14px; z-index: 31; font-size: 20px; cursor: pointer;}
-        .settings-panel { position: absolute; top: 60px; left: 50%; transform: translateX(-50%); background: #191941e8; padding: 18px 26px; border-radius: 16px; z-index: 99; display: none;}
-        .settings-panel label { display: block; margin: 13px 0 5px;}
-        .settings-panel input[type="checkbox"] { margin-left: 7px;}
         @media (max-width: 600px) { .game-container { max-width: 100vw; border-radius: 0; } .game-over, .start-screen, .pause-screen, .leaderboard-screen, .customize-screen, .daily-challenge-screen { max-width: 99vw; }}
     </style>
 </head>
@@ -94,20 +91,6 @@
         </div>
         <button class="pause-btn" id="pauseBtn" onclick="togglePause()">⏸️</button>
         <button class="close-btn" id="closeBtn" style="display:none;" title="إغلاق">✖️</button>
-        <button class="settings-btn" id="settingsBtn" title="الإعدادات">⚙️</button>
-        <div class="settings-panel" id="settingsPanel">
-            <label><input type="checkbox" id="soundToggle" checked> تفعيل الصوت</label>
-            <label><input type="checkbox" id="vibrationToggle" checked> تفعيل الاهتزاز</label>
-            <label>🌈 لون السيارة:
-                <select id="carColorSelect">
-                    <option value="#ff3333">أحمر</option>
-                    <option value="#3390ec">أزرق</option>
-                    <option value="#4ecdc4">أخضر</option>
-                    <option value="#ffd700">ذهبي</option>
-                </select>
-            </label>
-            <button class="btn secondary" onclick="document.getElementById('settingsPanel').style.display='none'">إغلاق</button>
-        </div>
         <div class="player-car" id="playerCar" data-emoji="🏎️"></div>
         <!-- Start Screen -->
         <div class="start-screen" id="startScreen">
@@ -116,9 +99,6 @@
                 لعبة ترفيهية سريعة داخل تليجرام<br>تحكم بسيارتك واجمع النقاط!
             </div>
             <button class="btn" onclick="startGame()">🚀 ابدأ اللعب</button>
-            <button class="btn secondary" onclick="showLeaderboard()">🏆 لوحة الشرف</button>
-            <button class="btn secondary" onclick="showCustomize()">🎨 تخصيص</button>
-            <button class="btn secondary" onclick="showDailyChallenge()">🔥 التحدي اليومي</button>
         </div>
         <!-- Game Over Screen -->
         <div class="game-over" id="gameOver">
@@ -133,41 +113,12 @@
             </div>
             <button class="btn" onclick="restartGame()">🎮 حاول مجدداً</button>
             <button class="btn secondary" onclick="backToMenu()">🏠 القائمة</button>
-            <button class="btn" id="tgShareBtn" style="display:none;">📤 مشاركة النتيجة</button>
         </div>
         <!-- Pause Screen -->
         <div class="pause-screen" id="pauseScreen">
             <h2>⏸️ مؤقت</h2>
             <button class="btn" onclick="togglePause()">▶️ متابعة</button>
             <button class="btn secondary" onclick="backToMenu()">🏠 القائمة</button>
-        </div>
-        <!-- Leaderboard -->
-        <div class="leaderboard-screen" id="leaderboardScreen">
-            <h2>🏆 لوحة الشرف</h2>
-            <div id="leaderboardList" style="text-align:right;font-size:15px;direction:rtl;min-height:130px"></div>
-            <button class="btn secondary" onclick="hideLeaderboard()">إغلاق</button>
-        </div>
-        <!-- Customize -->
-        <div class="customize-screen" id="customizeScreen">
-            <h2>🎨 التخصيص</h2>
-            <div>
-                <label>رمز السيارة:
-                    <select id="carEmojiSelect">
-                        <option value="🏎️">🏎️</option>
-                        <option value="🚘">🚘</option>
-                        <option value="🚗">🚗</option>
-                        <option value="🚕">🚕</option>
-                        <option value="🚓">🚓</option>
-                    </select>
-                </label>
-            </div>
-            <button class="btn secondary" onclick="hideCustomize()">إغلاق</button>
-        </div>
-        <!-- Daily Challenge -->
-        <div class="daily-challenge-screen" id="dailyChallengeScreen">
-            <h2>🔥 التحدي اليومي</h2>
-            <div id="dailyChallengeBox" style="font-size:15px;direction:rtl;min-height:60px"></div>
-            <button class="btn secondary" onclick="hideDailyChallenge()">إغلاق</button>
         </div>
         <!-- Control Zone -->
         <div class="control-zone">
@@ -177,37 +128,30 @@
         </div>
     </div>
 <script>
-// ========== 1. Telegram WebApp API تفاعل أعمق ==========
-let tg = window.Telegram && window.Telegram.WebApp;
-function applyTelegramTheme() {
-    if (tg && tg.themeParams) {
-        const p = tg.themeParams;
-        document.body.style.background = p.bg_color || "#1a1a2e";
-        document.body.style.color = p.text_color || "#4ecdc4";
-        document.documentElement.style.setProperty('--main-bg', p.bg_color || "#1a1a2e");
-        document.documentElement.style.setProperty('--accent', p.button_color || "#4ecdc4");
-        document.documentElement.style.setProperty('--telegram-accent', p.button_color || "#3390ec");
-    }
-}
-applyTelegramTheme();
-if(tg) {
-    tg.onEvent('themeChanged', applyTelegramTheme);
-    document.getElementById('closeBtn').style.display = 'block';
-    document.getElementById('closeBtn').onclick = () => tg.close();
-}
-
-// ========== إعدادات اللعبة ==========
+// صور الحسابات - يمكنك تغيير الروابط لاحقاً حسب صورك
+const accountImages = {
+    "CG-AI":      "https://cdn.jsdelivr.net/gh/aliamere21/assets/cgai.png",
+    "canva":      "https://cdn.jsdelivr.net/gh/aliamere21/assets/canva.png",
+    "crunchyroll":"https://cdn.jsdelivr.net/gh/aliamere21/assets/crunchyroll.png",
+    "perplexity ai": "https://cdn.jsdelivr.net/gh/aliamere21/assets/perplexity.png",
+    "apple tv":   "https://cdn.jsdelivr.net/gh/aliamere21/assets/appletv.png"
+};
+// بيانات الحسابات (اسم وصورة ونقاط وفرصة الظهور)
+const accounts = [
+    { name: "CG-AI",          points: 10,  chance: 0.23, img: accountImages["CG-AI"] },
+    { name: "canva",          points: 10,  chance: 0.18, img: accountImages["canva"] },
+    { name: "crunchyroll",    points: 30,  chance: 0.16, img: accountImages["crunchyroll"] },
+    { name: "perplexity ai",  points: 50,  chance: 0.13, img: accountImages["perplexity ai"] },
+    { name: "apple tv",       points: 100, chance: 0.09, img: accountImages["apple tv"] }
+];
+const powerupTypes = [
+    { emoji: '🛡️', type: 'shield', duration: 3500 },
+    { emoji: '⚡', type: 'speed', duration: 2200 }
+];
 let gameState = {
     score: 0, level: 1, speed: 3, gameRunning: false, gamePaused: false,
     playerPosition: 50, health: 3, combo: 1, comboCount: 0,
-    invulnerable: false, objects: [],
-    stats: { highestCombo: 1, gamesPlayed: 0 }
-};
-let gameSettings = {
-    sound: true,
-    vibration: true,
-    carColor: "#ff3333",
-    carEmoji: "🏎️"
+    invulnerable: false, objects: [], stats: { highestCombo: 1, gamesPlayed: 0 }
 };
 const playerCar = document.getElementById('playerCar');
 const gameContainer = document.getElementById('gameContainer');
@@ -220,174 +164,44 @@ const startScreen = document.getElementById('startScreen');
 const gameOverElement = document.getElementById('gameOver');
 const pauseScreen = document.getElementById('pauseScreen');
 const highScoreBadge = document.getElementById('highScoreBadge');
-const tgShareBtn = document.getElementById('tgShareBtn');
-const leaderboardScreen = document.getElementById('leaderboardScreen');
-const leaderboardList = document.getElementById('leaderboardList');
-const customizeScreen = document.getElementById('customizeScreen');
-const carEmojiSelect = document.getElementById('carEmojiSelect');
-const settingsBtn = document.getElementById('settingsBtn');
-const settingsPanel = document.getElementById('settingsPanel');
-const soundToggle = document.getElementById('soundToggle');
-const vibrationToggle = document.getElementById('vibrationToggle');
-const carColorSelect = document.getElementById('carColorSelect');
-const dailyChallengeScreen = document.getElementById('dailyChallengeScreen');
-const dailyChallengeBox = document.getElementById('dailyChallengeBox');
-
 let isDragging = false, dragStartX = 0, playerStartPos = 0;
-let vibrationAvailable = 'vibrate' in navigator;
 
-// ========== 3. محتوى ديناميكي (جلب الحسابات من الباك إند) ==========
-let accounts = [
-    { emoji: '🤖', points: 10, chance: 0.23 },
-    { emoji: '🎨', points: 10, chance: 0.14 },
-    { emoji: '📺', points: 30, chance: 0.16 },
-    { emoji: '🧠', points: 50, chance: 0.10 },
-    { emoji: '📱', points: 100, chance: 0.06 },
-    { emoji: '💵', points: 5, chance: 0.25 },
-    { emoji: '💎', points: 150, chance: 0.04 },
-];
-async function loadAccounts() {
-    try {
-        let res = await fetch('https://YOUR_BACKEND_URL/api/accounts');
-        let js = await res.json();
-        if(Array.isArray(js) && js.length) accounts = js;
-    } catch {}
-}
-
-// ========== 1. إرسال النتائج للبوت و مشاركة النتيجة ==========
-function sendScoreToBot() {
-    if (tg) {
-        tg.sendData(JSON.stringify({
-            type: "score",
-            score: gameState.score,
-            level: gameState.level,
-            highestCombo: gameState.stats.highestCombo
-        }));
-    }
-}
-// مشاركة النتيجة بزر رسمي
-if (tg) {
-    tgShareBtn.style.display = 'inline-block';
-    tgShareBtn.onclick = function () {
-        if (tg.MainButton) {
-            tg.MainButton.setText('📤 شارك نتيجتي');
-            tg.MainButton.show();
-            tg.MainButton.onClick(() => {
-                let msg = `🚗 جمعت ${gameState.score} نقطة في جامع الحسابات!`;
-                tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(msg)}`);
-            });
-        }
-    };
-} else {
-    tgShareBtn.onclick = function () { alert("غير متاح خارج تليجرام!"); };
-}
-
-// ========== 2. تخزين النتائج أونلاين/Leaderboard ==========
-function saveScoreBackend() {
-    if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
-        fetch('https://YOUR_BACKEND_URL/api/score', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                user_id: tg.initDataUnsafe.user.id,
-                username: tg.initDataUnsafe.user.username,
-                score: gameState.score,
-                level: gameState.level
-            })
-        });
-    }
-}
-async function showLeaderboard() {
-    leaderboardScreen.style.display = 'block';
-    leaderboardList.innerHTML = "جاري التحميل...";
-    try {
-        let res = await fetch('https://YOUR_BACKEND_URL/api/leaderboard');
-        let data = await res.json();
-        leaderboardList.innerHTML = data.slice(0, 10).map((item, i) =>
-            `<div>#${i + 1} - <b>${item.username || 'مجهول'}</b>: <span style="color:gold">${item.score}</span></div>`
-        ).join('');
-    } catch (e) {
-        leaderboardList.innerHTML = "تعذر جلب الترتيب.";
-    }
-}
-function hideLeaderboard() { leaderboardScreen.style.display = 'none'; }
-
-// ========== 3. تخصيص السيارة ==========
-function showCustomize() { customizeScreen.style.display = 'block'; }
-function hideCustomize() { customizeScreen.style.display = 'none'; }
-carEmojiSelect.addEventListener('change', function(){
-    gameSettings.carEmoji = this.value;
-    playerCar.setAttribute('data-emoji', gameSettings.carEmoji);
-    saveSettings();
-});
-carColorSelect.addEventListener('change', function(){
-    gameSettings.carColor = this.value;
-    document.documentElement.style.setProperty('--car-color', this.value);
-    saveSettings();
-});
-
-// ========== 4. تحدي يومي ==========
-async function showDailyChallenge() {
-    dailyChallengeScreen.style.display = 'block';
-    dailyChallengeBox.innerHTML = "جاري التحميل...";
-    try {
-        let res = await fetch('https://YOUR_BACKEND_URL/api/daily-challenge');
-        let c = await res.json();
-        dailyChallengeBox.innerHTML = `<b>المطلوب:</b> ${c.description}<br>الجائزة: <span style="color:gold">${c.reward}</span>`;
-    } catch (e) {
-        dailyChallengeBox.innerHTML = "لا يوجد تحدي اليوم.";
-    }
-}
-function hideDailyChallenge() { dailyChallengeScreen.style.display = 'none'; }
-
-// ========== إعدادات ==========
-settingsBtn.onclick = function () {
-    settingsPanel.style.display = settingsPanel.style.display === 'block' ? 'none' : 'block';
-};
-soundToggle.onchange = function(){ gameSettings.sound = this.checked; saveSettings(); };
-vibrationToggle.onchange = function(){ gameSettings.vibration = this.checked; saveSettings(); };
-function saveSettings() {
-    localStorage.setItem('tgCarGameSettings', JSON.stringify(gameSettings));
-}
-function loadSettings() {
-    let s = localStorage.getItem('tgCarGameSettings');
-    if (s) {
-        try {
-            let js = JSON.parse(s);
-            Object.assign(gameSettings, js);
-            soundToggle.checked = !!gameSettings.sound;
-            vibrationToggle.checked = !!gameSettings.vibration;
-            carColorSelect.value = gameSettings.carColor;
-            carEmojiSelect.value = gameSettings.carEmoji;
-            playerCar.setAttribute('data-emoji', gameSettings.carEmoji);
-            document.documentElement.style.setProperty('--car-color', gameSettings.carColor);
-        } catch {}
-    }
-}
-loadSettings();
-
-// ========== 5. تحسين واجهة المستخدم ==========
-function vibrate(ms) { if(vibrationAvailable && gameSettings.vibration) navigator.vibrate(ms);}
-function playSound() { if(gameSettings.sound) {/* ضع صوت بسيط هنا */} }
-
-// ========== باقي كود اللعبة ==========
-function createObject() {
-    let rand = Math.random(), obj = document.createElement('div');
-    if (rand < 0.6) { obj.className = 'obstacle-car'; obj.dataset.type = 'obstacle'; }
-    else if (rand < 0.97) {
-        let acc = getRandomAccount();
-        obj.className = 'account-item'; obj.textContent = acc.emoji;
-        obj.dataset.type = 'account'; obj.dataset.points = acc.points;
-    } else {
-        obj.className = 'powerup'; obj.textContent = '🛡️'; obj.dataset.type = 'powerup'; obj.dataset.powerupType = 'shield'; obj.dataset.duration = 3500;
-    }
-    obj.style.left = (Math.random() * 68 + 14) + '%'; obj.style.top = '-75px';
-    gameContainer.appendChild(obj); gameState.objects.push(obj);
-}
 function getRandomAccount() {
     let total = accounts.reduce((s, a) => s + a.chance, 0), rand = Math.random() * total;
     for (let a of accounts) { rand -= a.chance; if (rand <= 0) return a;}
     return accounts[0];
+}
+function createObject() {
+    let rand = Math.random(), obj;
+    if (rand < 0.6) {
+        obj = document.createElement('div');
+        obj.className = 'obstacle-car'; obj.dataset.type = 'obstacle';
+    } else if (rand < 0.97) {
+        let acc = getRandomAccount();
+        obj = document.createElement('div');
+        obj.className = 'account-item'; obj.dataset.type = 'account';
+        obj.dataset.points = acc.points;
+        obj.dataset.name = acc.name;
+        // صورة الحساب
+        let img = document.createElement('img');
+        img.className = "account-pic";
+        img.src = acc.img;
+        img.alt = acc.name;
+        obj.appendChild(img);
+        // اسم الحساب
+        let label = document.createElement('span');
+        label.className = "account-label";
+        label.textContent = acc.name;
+        obj.appendChild(label);
+    } else {
+        // Powerup
+        obj = document.createElement('div');
+        obj.className = 'powerup';
+        obj.textContent = '🛡️';
+        obj.dataset.type = 'powerup'; obj.dataset.powerupType = 'shield'; obj.dataset.duration = 3500;
+    }
+    obj.style.left = (Math.random() * 68 + 14) + '%'; obj.style.top = '-75px';
+    gameContainer.appendChild(obj); gameState.objects.push(obj);
 }
 function updateObjects() {
     gameState.objects.forEach((obj, i) => {
@@ -412,17 +226,15 @@ function handleCollision(obj, i) {
 function takeDamage() {
     gameState.health--; gameState.combo = 1; gameState.comboCount = 0; updateUI();
     playerCar.style.opacity = '0.45'; gameState.invulnerable = true;
-    vibrate([120,80,120]);
     setTimeout(() => { playerCar.style.opacity = '1'; gameState.invulnerable = false; }, 1050);
     if (gameState.health <= 0) gameOver();
 }
 function collectAccount(obj) {
-    let pts = parseInt(obj.dataset.points), earned = pts * gameState.combo;
-    gameState.score += earned; gameState.comboCount++; playSound();
+    let pts = parseInt(obj.dataset.points);
+    gameState.score += (pts * gameState.combo); gameState.comboCount++;
     if (gameState.comboCount >= 3) {
         gameState.combo = Math.min(gameState.combo + 1, 8); gameState.comboCount = 0;
         gameState.stats.highestCombo = Math.max(gameState.stats.highestCombo, gameState.combo);
-        vibrate(100);
     }
     updateUI();
     if (gameState.score >= gameState.level * 130) levelUp();
@@ -457,8 +269,6 @@ function gameOver() {
         highScoreBadge.style.display = 'block';
     } else document.getElementById('newHighScore').style.display = 'none';
     saveGameData();
-    sendScoreToBot();
-    saveScoreBackend();
     gameOverElement.style.display = 'block';
     playerCar.style.opacity = '0.55';
 }
@@ -472,7 +282,7 @@ function togglePause() {
 function startGame() {
     gameState = { ...gameState, score: 0, level: 1, speed: 3, gameRunning: true, gamePaused: false, playerPosition: 50, health: 3, combo: 1, comboCount: 0, invulnerable: false, objects: [] };
     updateUI(); startScreen.style.display = 'none'; gameOverElement.style.display = 'none'; pauseScreen.style.display = 'none';
-    playerCar.style.left = '50%'; playerCar.style.opacity = '1'; playerCar.setAttribute('data-emoji', gameSettings.carEmoji); document.documentElement.style.setProperty('--car-color', gameSettings.carColor);
+    playerCar.style.left = '50%'; playerCar.style.opacity = '1';
     clearAllObjects(); gameLoop();
 }
 function restartGame() { startGame(); }
@@ -498,7 +308,7 @@ function levelUp() {
     road.style.animationDuration = Math.max(0.25, 1 - (gameState.level * 0.09)) + 's';
 }
 
-// ========== تحكم ==========
+// تحكم
 function initControls() {
     playerCar.addEventListener('mousedown', startDrag);
     document.addEventListener('mousemove', drag);
@@ -540,8 +350,7 @@ function movePlayer(dir) {
     gameState.playerPosition = Math.max(12, Math.min(88, gameState.playerPosition));
     playerCar.style.left = gameState.playerPosition + '%';
 }
-
-// ========== تخزين النقاط محلياً ==========
+// تخزين النقاط محلياً
 function loadGameData() {
     let saved = localStorage.getItem('tgCarGameData');
     if (saved) {
@@ -556,12 +365,8 @@ function saveGameData() {
     let highScore = Math.max(gameState.score, parseInt(document.getElementById('highScoreValue').textContent) || 0);
     localStorage.setItem('tgCarGameData', JSON.stringify({ highScore }));
 }
-
-// ========== تهيئة ==========
 document.addEventListener('DOMContentLoaded', () => {
     loadGameData();
-    loadSettings();
-    loadAccounts();
     initControls();
 });
 document.addEventListener('touchmove', e => { if (gameState.gameRunning) e.preventDefault(); }, { passive: false });
