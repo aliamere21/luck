@@ -2,38 +2,153 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>لعبة المحاولات + لوحة الأدمن</title>
+    <title>لعبة الحظ الكبرى 🔮</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Google Fonts for Arabic and digital look -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <style>
         body {
-            background: #1a1a32;
-            color: #f4faff;
+            background: radial-gradient(ellipse at top left, #232946 70%, #151b2c 100%);
             font-family: 'Cairo', Tahoma, Arial, sans-serif;
-            margin: 0; padding: 0;
+            color: #f4faff;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
         }
         .container, .admin-panel {
-            max-width: 500px;
-            margin: 30px auto 0 auto;
-            background: #232946;
-            border-radius: 18px;
-            box-shadow: 0 6px 32px #000a;
-            padding: 26px 18px 22px 18px;
+            max-width: 420px;
+            margin: 36px auto 0 auto;
+            background: rgba(35,41,70,0.98);
+            border-radius: 20px;
+            box-shadow: 0 6px 36px 0 #000b;
+            padding: 35px 24px 26px 24px;
         }
         .container {
-            margin-top: 15px;
+            margin-top: 40px;
+            text-align: center;
         }
-        h2, h3 {
+        h2 {
             color: #00ffd0;
+            font-family: 'Share Tech Mono', monospace;
+            letter-spacing: 2px;
+            margin: 0 0 22px 0;
+            font-size: 2.1em;
+            text-shadow: 0 2px 12px #00ffd088;
         }
-        input, button, select {
-            font-size: 1.05rem;
+        .user-info {
+            background: #1b2232;
+            border-radius: 10px;
+            padding: 10px 13px 6px 13px;
+            margin: 0 0 24px 0;
+            color: #ffe066;
+            font-size: 1.08em;
+            text-align: right;
+        }
+        .game-box {
+            margin-bottom: 38px;
+        }
+        .luck-wheel {
+            margin: 0 auto 18px auto;
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            background: conic-gradient(
+                #ffe066 0 30deg,
+                #00ffd0 30deg 90deg,
+                #ff2255 90deg 150deg,
+                #a0f 150deg 210deg,
+                #00ffd0 210deg 270deg,
+                #ffe066 270deg 330deg,
+                #ff2255 330deg 360deg
+            );
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            box-shadow: 0 0 32px #00ffd0aa, 0 8px 30px #0009;
+        }
+        .wheel-pointer {
+            position: absolute;
+            top: -24px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0; height: 0;
+            border-left: 18px solid transparent;
+            border-right: 18px solid transparent;
+            border-bottom: 28px solid #ffe066;
+            z-index: 10;
+            filter: drop-shadow(0 2px 7px #ffe06677);
+        }
+        .wheel-btn {
+            font-family: 'Share Tech Mono', Cairo, monospace;
+            font-size: 1.15em;
+            background: linear-gradient(90deg, #00ffd0, #ffe066);
+            color: #232946;
+            font-weight: bold;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            margin: 13px 0 0 0;
+            padding: 12px 44px;
+            box-shadow: 0 2px 12px #00ffd055;
+            transition: transform 0.1s;
+        }
+        .wheel-btn:active {
+            transform: scale(0.97);
+        }
+        .game-result {
+            font-size: 1.2em;
+            font-weight: bold;
+            min-height: 34px;
+            margin-top: 12px;
+            color: #ffe066;
+            text-shadow: 0 2px 8px #151b2c88;
+        }
+        .attempts-info {
+            margin-top: 16px;
+            color: #00ffd0;
+            font-size: 1.08em;
+        }
+        .howto {
+            margin-top: 14px;
+            color: #ffe066c2;
+            font-size: 0.99rem;
+            line-height: 1.55;
+            text-align: right;
+            border-top: 1px dashed #00ffd055;
+            padding-top: 8px;
+        }
+        /* Admin panel */
+        .admin-panel {
+            margin-top: 40px;
+            display: none;
+        }
+        .admin-panel.active {
+            display: block;
+            animation: fadein 0.7s;
+        }
+        @keyframes fadein {
+            from { opacity: 0; transform: translateY(30px);}
+            to { opacity: 1;}
+        }
+        .admin-panel h3 {
+            color: #ffe066;
+            margin-bottom: 16px;
+            letter-spacing: 1px;
+        }
+        .admin-panel input, .admin-panel button {
+            font-size: 1.06rem;
             padding: 7px 13px;
             margin: 4px 0;
             border-radius: 7px;
             border: none;
             outline: none;
         }
-        input, select { width: 74%; }
-        button {
+        .admin-panel input {
+            width: 44%;
+            margin-left: 6px;
+        }
+        .admin-panel button {
             background: linear-gradient(90deg, #00ffd0, #ffe066);
             color: #232946;
             font-weight: bold;
@@ -41,15 +156,25 @@
             margin: 7px 2px;
             border-bottom: 2.5px solid #ffe066aa;
         }
+        .msg {
+            margin: 12px 0 0 0;
+            font-size: 1.09em;
+            color: #ffe066;
+        }
         .users-list {
             margin-top: 18px;
+            max-height: 340px;
+            overflow-y: auto;
+            background: #171d2f;
+            border-radius: 8px;
+            padding: 8px 4px;
         }
         table {
             width: 100%;
-            background: #1a1a32;
+            background: #151b2c;
             border-radius: 10px;
-            margin-top: 8px;
             border-collapse: collapse;
+            font-size: 0.99em;
         }
         th, td {
             padding: 7px 5px;
@@ -58,6 +183,8 @@
         th {
             background: #232946;
             color: #ffe066;
+            font-weight: bold;
+            letter-spacing: 1px;
         }
         tr:nth-child(even) { background: #23294644;}
         tr:hover { background: #23294666;}
@@ -66,152 +193,302 @@
             padding: 5px 12px;
             margin: 0 2px;
         }
-        .msg {
-            margin: 12px 0 0 0;
-            font-size: 1.09em;
-            color: #ffe066;
+        .search-bar {
+            margin: 10px 0 8px 0;
+            display: flex;
+            justify-content: flex-end;
         }
-        .code-col {
-            font-family: "Consolas", "Cairo", monospace;
+        .search-bar input {
+            width: 54%;
+            font-size: 1em;
+            background: #232946;
             color: #00ffd0;
-            font-weight: bold;
-            direction: ltr;
+            border: 1.5px solid #00ffd066;
+        }
+        .admin-panel .logout-btn {
+            background: #ff2255;
+            color: #fff;
+            margin: 5px 0 12px 0;
+            border-radius: 6px;
+            padding: 7px 24px;
+            font-size: 1.04em;
+        }
+        .badge {
+            display: inline-block;
+            background: #00ffd080;
+            color: #232946;
+            font-size: 0.85em;
+            border-radius: 8px;
+            padding: 1px 10px 0 10px;
+            margin-right: 2px;
+            font-family: 'Cairo', sans-serif;
+        }
+        .badge.admin { background: #ffe066b0; color: #232946; }
+        .badge.lucky { background: #ff2255c0; color: #fff; }
+        .badge.active { background: #00ffd0c0; color: #232946;}
+        .wheel-spin-anim {
+            animation: spin 2.3s cubic-bezier(.22,.99,.46,1.01) 1;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg);}
+            80% { transform: rotate(1100deg);}
+            100% { transform: rotate(var(--angle,1100deg));}
         }
     </style>
 </head>
 <body>
-<div class="container">
-    <h2>🎮 لعبة المحاولات</h2>
-    <div>
-        <input type="text" id="userId" placeholder="معرف المستخدم (userId)">
-        <input type="text" id="userCode" placeholder="رمز المستخدم (Code)">
-        <button onclick="checkAttempts()">ابدأ اللعب</button>
+<div class="container" id="gameContainer">
+    <h2>لعبة الحظ الكبرى 🔮</h2>
+    <div class="user-info" id="userInfo"></div>
+    <div class="game-box">
+        <div class="luck-wheel" id="luckWheel">
+            <div class="wheel-pointer"></div>
+            <span id="wheelCenter" style="font-family:'Share Tech Mono',monospace;font-size:2.3em;color:#232946;z-index:2;">?</span>
+        </div>
+        <button class="wheel-btn" onclick="spinWheel()" id="playBtn">جرب حظك الآن!</button>
+        <div class="game-result" id="gameResult"></div>
     </div>
-    <div id="status" style="margin:17px 0 14px 0; font-size: 1.13rem; font-weight:bold"></div>
-    <div style="margin-top:14px; color:#ffe066b3; font-size:0.99rem;">
-        * كل مستخدم له محاولة واحدة + رمز.<br>
-        * إذا انتهت محاولتك تصير 0.<br>
-        * إذا وضع الأدمن المحاولة = 1 ترجع.<br>
-        * لوحة الأدمن تتحكم بالمحاولات والرمز.<br>
-        * المستخدم يضاف تلقائيًا عند أول دخول صحيح.<br>
+    <div class="attempts-info" id="attemptsInfo"></div>
+    <div class="howto">
+        ⭐ لديك محاولة واحدة فقط يوميًا.<br>
+        🎯 إذا انتهت محاولتك، اطلب من الأدمن أن يرجعها.<br>
+        🌀 استمتع بالدوران، قد تربح جائزة أو رسالة سرية!<br>
+        🛡️ معرفك محفوظ ولن يستطيع غيرك اللعب بنفس الحساب.<br>
+        <b>ملاحظة:</b> كل محاولاتك تسجل تلقائيًا في النظام.<br>
     </div>
 </div>
-<div class="admin-panel">
+
+<div class="admin-panel" id="adminPanel">
     <h3>👑 لوحة تحكم الأدمن</h3>
+    <button class="logout-btn" onclick="logoutAdmin()">خروج الأدمن</button>
+    <div class="search-bar">
+        <input type="text" id="searchUser" placeholder="بحث عن مستخدم..." oninput="refreshUsers()">
+    </div>
     <form id="userForm" onsubmit="return false;">
         <input type="text" id="adminUserId" placeholder="معرف المستخدم (userId)">
-        <input type="text" id="adminUserCode" placeholder="رمز المستخدم (Code)">
         <input type="number" min="0" id="attemptsInput" placeholder="عدد المحاولات">
-        <button onclick="setAttempts()">تعيين المحاولات/رمز</button>
+        <button onclick="setAttempts()">تعيين المحاولات</button>
         <button onclick="restoreAttempt()">إرجاع محاولة (1)</button>
         <button onclick="resetAttempts()">تصفير المحاولات (0)</button>
     </form>
     <div class="msg" id="msg"></div>
     <div class="users-list" id="usersList"></div>
 </div>
+
 <script>
-// ========== DATA STRUCTURE =========
-// usersData = { userId: {code: ..., attempts: ...}, ... }
+// ========== إعدادات ==========
+const ADMIN_TELEGRAM_USERNAME = "u_bil";  // غير هذا ليوزر الأدمن في تيليجرام
+const ADMIN_SECRET = "admin-super-2024"; // غير هذا لرمز رابط الأدمن الخاص
+
+// ========== نظام المستخدمين ==========
 function getAllUsers() {
-    let users = localStorage.getItem("gameAttemptsUsers");
+    let users = localStorage.getItem("luckGameUsers");
     users = users ? JSON.parse(users) : {};
     return users;
 }
 function saveAllUsers(users) {
-    localStorage.setItem("gameAttemptsUsers", JSON.stringify(users));
+    localStorage.setItem("luckGameUsers", JSON.stringify(users));
 }
 function getUser(userId) {
     let users = getAllUsers();
     return users[userId] || null;
 }
-function setUser(userId, code, attempts) {
+function setUser(userId, attempts, displayName="", isAdmin=false) {
     let users = getAllUsers();
-    users[userId] = { code: code, attempts: attempts };
+    users[userId] = users[userId] || {};
+    users[userId].attempts = attempts;
+    if (displayName) users[userId].displayName = displayName;
+    if (isAdmin!==undefined) users[userId].isAdmin = !!isAdmin;
+    if (!users[userId].joinedAt) users[userId].joinedAt = new Date().toISOString();
     saveAllUsers(users);
 }
 function setUserAttempts(userId, attempts) {
     let users = getAllUsers();
-    let user = users[userId] || {code:'', attempts:1};
+    let user = users[userId] || {};
     user.attempts = attempts;
     users[userId] = user;
     saveAllUsers(users);
 }
-function setUserCode(userId, code) {
-    let users = getAllUsers();
-    let user = users[userId] || {code:'', attempts:1};
-    user.code = code;
-    users[userId] = user;
-    saveAllUsers(users);
-}
-function resetUserAttempts(userId) {
-    setUserAttempts(userId, 0);
-}
-function restoreUserAttempt(userId) {
-    setUserAttempts(userId, 1);
-}
+function resetUserAttempts(userId) { setUserAttempts(userId, 0); }
+function restoreUserAttempt(userId) { setUserAttempts(userId, 1); }
 function deleteUser(userId) {
     let users = getAllUsers();
     delete users[userId];
     saveAllUsers(users);
 }
 
-// ========== PLAYER SECTION ==========
-function checkAttempts() {
-    let userId = document.getElementById('userId').value.trim();
-    let userCode = document.getElementById('userCode').value.trim();
-    if (!userId || !userCode) {
-        showStatus("رجاءً أدخل معرف المستخدم والرمز!", true);
-        return;
-    }
-    let user = getUser(userId);
+// ========== جلب يوزر تيليجرام تلقائي ==========
+let CURRENT_USER_ID = "";
+let IS_ADMIN = false;
+let CURRENT_USER_NAME_DISPLAY = "";
+let CURRENT_USER_FULLNAME = "";
+let isWebAppTelegram = false;
 
-    // --- يضاف تلقائيا إذا لم يكن موجود ---
-    if (!user) {
-        setUser(userId, userCode, 1);
-        user = { code: userCode, attempts: 1 };
-        showStatus("🟢 تم تسجيلك بنجاح! لديك محاولة واحدة للعب.", false);
-        refreshUsers();
-        return;
-    }
-    // -------------------------------------
-
-    // تحقق من الرمز
-    if (user.code !== userCode) {
-        showStatus("❌ رمز المستخدم غير صحيح!", true);
-        return;
-    }
-    if (user.attempts > 0) {
-        setUserAttempts(userId, user.attempts - 1);
-        showStatus("✅ تستطيع اللعب! (المحاولة الآن: " + (user.attempts - 1) + ")", false);
-        refreshUsers();
+if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe && window.Telegram.WebApp.initDataUnsafe.user) {
+    isWebAppTelegram = true;
+    const tgUser = window.Telegram.WebApp.initDataUnsafe.user;
+    if (tgUser.username) {
+        CURRENT_USER_ID = tgUser.username;
+        CURRENT_USER_NAME_DISPLAY = "@" + tgUser.username;
     } else {
-        showStatus("❌ انتهت محاولتك! اطلب من الأدمن إرجاعها.", true);
+        CURRENT_USER_ID = "tg_" + tgUser.id;
+        CURRENT_USER_NAME_DISPLAY = "ID: " + tgUser.id;
     }
-}
-function showStatus(msg, isErr) {
-    let el = document.getElementById('status');
-    el.textContent = msg;
-    el.style.color = isErr ? "#ff2255" : "#00ffd0";
+    CURRENT_USER_FULLNAME = (tgUser.first_name||"") + (tgUser.last_name ? " " + tgUser.last_name : "");
+    IS_ADMIN = (tgUser.username && tgUser.username.toLowerCase() === ADMIN_TELEGRAM_USERNAME.toLowerCase());
+} else {
+    // خارج تيليجرام (للتجربة فقط)
+    CURRENT_USER_ID = localStorage.getItem("currentUserId");
+    if (!CURRENT_USER_ID) {
+        CURRENT_USER_ID = prompt("أدخل يوزرك تيليجرام (username فقط):", "user_" + Math.floor(Math.random()*10000));
+        localStorage.setItem("currentUserId", CURRENT_USER_ID);
+    }
+    CURRENT_USER_NAME_DISPLAY = CURRENT_USER_ID;
+    CURRENT_USER_FULLNAME = CURRENT_USER_ID;
+    IS_ADMIN = (CURRENT_USER_ID.toLowerCase() === ADMIN_TELEGRAM_USERNAME.toLowerCase());
 }
 
-// ========== ADMIN SECTION ==========
+// ========== حماية صفحة الأدمن ==========
+function showAdminPanel() {
+    document.getElementById('adminPanel').classList.add('active');
+    document.getElementById('gameContainer').style.display = "none";
+    refreshUsers();
+}
+function hideAdminPanel() {
+    document.getElementById('adminPanel').classList.remove('active');
+    document.getElementById('gameContainer').style.display = "block";
+}
+function logoutAdmin() {
+    window.location.hash = "";
+    hideAdminPanel();
+}
+
+// تفعيل الأدمن إما برابط سري أو إذا هو يوزر الأدمن
+if (window.location.hash === "#"+ADMIN_SECRET || IS_ADMIN) {
+    showAdminPanel();
+} else {
+    hideAdminPanel();
+}
+
+// ========== عرض معلومات المستخدم ==========
+function displayUserInfo() {
+    let el = document.getElementById('userInfo');
+    let badges = "";
+    if (IS_ADMIN) badges += `<span class="badge admin">أدمن</span>`;
+    el.innerHTML = `<b>معرفك تيليجرام:</b> <span style="color:#00ffd0">${CURRENT_USER_NAME_DISPLAY}</span>
+        ${CURRENT_USER_FULLNAME && CURRENT_USER_FULLNAME !== CURRENT_USER_ID ? "<br><b>الاسم:</b> "+CURRENT_USER_FULLNAME : ""}
+        ${badges}`;
+}
+displayUserInfo();
+
+// ========== تسجيل المستخدم تلقائي ==========
+function autoRegisterUser() {
+    let user = getUser(CURRENT_USER_ID);
+    if (!user) {
+        setUser(CURRENT_USER_ID, 1, CURRENT_USER_FULLNAME || CURRENT_USER_ID, IS_ADMIN);
+    }
+}
+autoRegisterUser();
+updateAttemptsOnScreen();
+
+// ========== لعبة الحظ ==========
+const wheelSectors = [
+    { name: "مبروك! 🎉 كسبت 10 نقاط", color: "#ffe066", type: "win", prize: 10 },
+    { name: "حظ أوفر! 😅", color: "#00ffd0", type: "lose", prize: 0 },
+    { name: "جائزة سرية! 🕵️", color: "#ff2255", type: "secret", prize: "كود خاص" },
+    { name: "إعادة محاولة! 🔄", color: "#a0f", type: "retry", prize: "retry" },
+    { name: "مبروك! 🎁 كرت هدية", color: "#00ffd0", type: "win", prize: "giftcard" },
+    { name: "حظ أوفر! 😅", color: "#ffe066", type: "lose", prize: 0 },
+    { name: "مبروك! ⭐ نجمة", color: "#ff2255", type: "win", prize: "star" },
+    { name: "حظ أوفر! 😅", color: "#a0f", type: "lose", prize: 0 }
+];
+let isSpinning = false;
+
+function spinWheel() {
+    if (isSpinning) return;
+    let user = getUser(CURRENT_USER_ID);
+    if (!user || user.attempts <= 0) {
+        showStatus("❌ انتهت محاولتك! اطلب من الأدمن إرجاعها.", true);
+        return;
+    }
+    isSpinning = true;
+    document.getElementById('playBtn').disabled = true;
+    showStatus("الدولاب يدور...", false);
+    // اختيار عشوائي
+    const sectorIdx = Math.floor(Math.random()*wheelSectors.length);
+    const sector = wheelSectors[sectorIdx];
+    // دوران الدولاب
+    let fullRounds = 3;
+    let degPerSector = 360 / wheelSectors.length;
+    let angle = 360*fullRounds + (wheelSectors.length - sectorIdx - 0.5)*degPerSector;
+    let wheel = document.getElementById('luckWheel');
+    wheel.style.setProperty('--angle', angle + "deg");
+    wheel.classList.remove('wheel-spin-anim');
+    setTimeout(()=>{ wheel.classList.add('wheel-spin-anim'); }, 50);
+
+    setTimeout(()=>{
+        // عرض النتيجة
+        document.getElementById('wheelCenter').textContent = "?";
+        let msg = "";
+        if (sector.type === "win") {
+            msg = "🎉 " + sector.name;
+        } else if (sector.type === "lose") {
+            msg = "😅 " + sector.name;
+        } else if (sector.type === "secret") {
+            msg = "🕵️ جائزة سرية! تواصل مع الأدمن.";
+        } else if (sector.type === "retry") {
+            msg = "🔄 حصلت على محاولة إضافية!";
+            setUserAttempts(CURRENT_USER_ID, user.attempts); // لا تخصم المحاولة
+            updateAttemptsOnScreen();
+        }
+        document.getElementById('gameResult').textContent = msg;
+        // حفظ نتيجة الدوران (مثلاً في قاعدة بيانات لاحقاً)
+        if (sector.type !== "retry") {
+            setUserAttempts(CURRENT_USER_ID, user.attempts - 1);
+            updateAttemptsOnScreen();
+        }
+        // وضع علامة حظ سعيد إذا ربح
+        if (sector.type === "win" || sector.type === "secret") {
+            let users = getAllUsers();
+            users[CURRENT_USER_ID].lucky = true;
+            saveAllUsers(users);
+        }
+        isSpinning = false;
+        document.getElementById('playBtn').disabled = false;
+        document.getElementById('wheelCenter').textContent = sectorIdx+1;
+    }, 2450);
+}
+
+function showStatus(msg, isErr) {
+    let el = document.getElementById('gameResult');
+    el.textContent = msg;
+    el.style.color = isErr ? "#ff2255" : "#ffe066";
+}
+function updateAttemptsOnScreen() {
+    let user = getUser(CURRENT_USER_ID);
+    document.getElementById('attemptsInfo').innerHTML =
+        user ? `محاولاتك المتبقية: <span style="color:#ffe066;font-weight:bold">${user.attempts}</span>` : "";
+}
+
+// ========== ADMIN PANEL ==========
 function setAttempts() {
     let userId = document.getElementById('adminUserId').value.trim();
-    let userCode = document.getElementById('adminUserCode').value.trim();
     let val = Number(document.getElementById('attemptsInput').value);
-    if (!userId || !userCode || isNaN(val) || val < 0) {
-        showMsg("أدخل معرف، رمز وعدد محاولات صحيح.");
+    if (!userId || isNaN(val) || val < 0) {
+        showMsg("أدخل معرف وعدد محاولات صحيح.");
         return false;
     }
-    setUser(userId, userCode, val);
-    showMsg("تم تعيين " + val + " محاولة للمستخدم " + userId + " برمز ["+userCode+"]");
+    let user = getUser(userId);
+    if (!user) setUser(userId, val);
+    else setUserAttempts(userId, val);
+    showMsg("تم تعيين " + val + " محاولة للمستخدم " + userId);
     refreshUsers();
     return false;
 }
 function restoreAttempt() {
     let userId = document.getElementById('adminUserId').value.trim();
     let user = getUser(userId);
-    if (!userId || !user || !user.code) { showMsg("أدخل معرف مستخدم صحيح موجود!"); return false; }
+    if (!userId || !user) { showMsg("أدخل معرف مستخدم صحيح موجود!"); return false; }
     restoreUserAttempt(userId);
     showMsg("تم إرجاع محاولة واحدة للمستخدم " + userId);
     refreshUsers();
@@ -220,7 +497,7 @@ function restoreAttempt() {
 function resetAttempts() {
     let userId = document.getElementById('adminUserId').value.trim();
     let user = getUser(userId);
-    if (!userId || !user || !user.code) { showMsg("أدخل معرف مستخدم صحيح موجود!"); return false; }
+    if (!userId || !user) { showMsg("أدخل معرف مستخدم صحيح موجود!"); return false; }
     resetUserAttempts(userId);
     showMsg("تم تصفير المحاولات للمستخدم " + userId);
     refreshUsers();
@@ -233,19 +510,33 @@ function showMsg(msg) {
 }
 function refreshUsers() {
     let users = getAllUsers();
+    let search = document.getElementById('searchUser')?.value?.trim()||"";
     let html = "<h3>كل المستخدمين المسجلين</h3>";
-    let keys = Object.keys(users);
+    let keys = Object.keys(users).concat([]);
+    if (search) {
+        keys = keys.filter(uid =>
+            uid.toLowerCase().includes(search.toLowerCase()) ||
+            (users[uid].displayName && users[uid].displayName.toLowerCase().includes(search.toLowerCase()))
+        );
+    }
     if (keys.length === 0) {
         html += "<div>لا يوجد مستخدمين بعد.</div>";
     } else {
         html += `<table>
-            <tr><th>معرف المستخدم</th><th>الرمز</th><th>عدد المحاولات</th><th>إجراءات</th></tr>`;
+            <tr><th>معرف المستخدم</th><th>الاسم</th><th>محاولات</th><th>منذ</th><th>شارات</th><th>إجراءات</th></tr>`;
+        keys.sort((a,b)=>users[b].joinedAt?.localeCompare(users[a].joinedAt));
         keys.forEach(userId => {
             let user = users[userId];
+            let badges = "";
+            if (user.isAdmin) badges += `<span class="badge admin">أدمن</span>`;
+            if (user.lucky) badges += `<span class="badge lucky">محظوظ</span>`;
+            if (user.attempts>0) badges += `<span class="badge active">نشط</span>`;
             html += `<tr>
                 <td>${userId}</td>
-                <td class="code-col">${user.code}</td>
-                <td>${user.attempts}</td>
+                <td>${user.displayName||""}</td>
+                <td>${user.attempts||0}</td>
+                <td>${user.joinedAt ? timeAgo(user.joinedAt) : ""}</td>
+                <td>${badges}</td>
                 <td class="admin-actions">
                     <button onclick="restoreUserAttempt('${userId}');refreshUsers();">1 محاولة</button>
                     <button onclick="resetUserAttempts('${userId}');refreshUsers();">تصفير</button>
@@ -262,7 +553,26 @@ window.resetUserAttempts = resetUserAttempts;
 window.deleteUser = deleteUser;
 window.refreshUsers = refreshUsers;
 
-document.addEventListener('DOMContentLoaded', refreshUsers);
+// ========== أدوات مساعدة ==========
+function timeAgo(dateStr) {
+    let d = new Date(dateStr);
+    let now = new Date();
+    let diff = (now - d)/1000;
+    if (diff < 60) return "الآن";
+    let m = Math.floor(diff/60);
+    if (m<60) return `${m} دقيقة`;
+    let h = Math.floor(m/60);
+    if (h<24) return `${h} ساعة`;
+    let d2 = Math.floor(h/24);
+    return `${d2} يوم`;
+}
+
+// تحديث المحاولات عند أي حدث
+document.getElementById('playBtn').addEventListener('click', updateAttemptsOnScreen);
+
+// عند دخول الأدمن، تحديث القائمة تلقائياً
+if (document.getElementById('adminPanel').classList.contains('active')) refreshUsers();
+
 </script>
 </body>
 </html>
