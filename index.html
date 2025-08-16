@@ -133,18 +133,14 @@ const sounds = {
     die:      new Audio('assets/die.mp3'),
     coin:     new Audio('assets/coin.mp3'),
     levelup:  new Audio('assets/levelup.mp3'),
-    hero:     new Audio('assets/hero.mp3')
+    hero:     new Audio('assets/hero.mp3'),
+    crash:    new Audio('assets/crash.mp3')
 };
-// صور العملات (يمكنك تغييرها)
-const coinImages = [
-    "https://cdn.jsdelivr.net/gh/aliamere21/assets/coin_gold.png", // عملة ذهبية
-    "https://cdn.jsdelivr.net/gh/aliamere21/assets/coin_silver.png", // عملة فضية
-    "https://cdn.jsdelivr.net/gh/aliamere21/assets/coin_bronze.png" // عملة برونزية
-];
+// صورة العملة الذهبية (يمكنك تغيير الرابط حسب ملفك)
+const coinImage = "assets/coin.png";
+// أنواع العملات (ذَهَب فقط هنا لكن يمكنك توسيعها)
 const coinTypes = [
-    { name: "ذهب",    points: 10, img: coinImages[0], chance: 0.7 },
-    { name: "فضة",    points: 5,  img: coinImages[1], chance: 0.23 },
-    { name: "برونز",  points: 3,  img: coinImages[2], chance: 0.07 }
+    { name: "ذهب", points: 10, img: coinImage, chance: 1 }
 ];
 const powerupTypes = [
     { emoji: '🛡️', type: 'shield', duration: 3500 },
@@ -231,7 +227,7 @@ function handleCollision(obj, i) {
 function takeDamage() {
     gameState.health--; gameState.combo = 1; gameState.comboCount = 0; updateUI();
     playerCar.style.opacity = '0.45'; gameState.invulnerable = true;
-    sounds.die.play();
+    sounds.crash.play();
     setTimeout(() => { playerCar.style.opacity = '1'; gameState.invulnerable = false; }, 1050);
     if (gameState.health <= 0) gameOver();
 }
