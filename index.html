@@ -2,577 +2,586 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>لعبة الحظ الكبرى 🔮</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Google Fonts for Arabic and digital look -->
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <title>🚗✨ جامع العملات الأسطوري - نسخة السيارات المطورة</title>
     <style>
+        :root {
+            --main-bg: linear-gradient(135deg, #1c1c31 0%, #243b55 100%);
+            --container-bg: linear-gradient(135deg, #232526 0%, #2c3e50 100%);
+            --road-bg: repeating-linear-gradient(90deg, #222 0, #222 7%, #333 7%, #333 14%);
+            --accent: #00ffd0;
+            --danger: #ff2255;
+            --score-bg: rgba(255,255,255,0.08);
+            --car-shadow: 0 0 38px 8px #fff7b5;
+            --car1: linear-gradient(135deg, #fffa65 60%, #00ffd0 100%);
+            --car2: linear-gradient(135deg, #6af9ff 60%, #2e69e9 100%);
+            --car3: linear-gradient(135deg, #ff6ab9 60%, #e92e8b 100%);
+            --car4: linear-gradient(135deg, #baff6a 60%, #5ee92e 100%);
+            --car5: linear-gradient(135deg, #ffa66a 60%, #e98b2e 100%);
+            --coin-glow: 0 0 18px #ffe066, 0 0 8px #00ffd0;
+            --road-shadow: 0 12px 60px #000b;
+            --star: #ffe066;
+        }
         body {
-            background: radial-gradient(ellipse at top left, #232946 70%, #151b2c 100%);
-            font-family: 'Cairo', Tahoma, Arial, sans-serif;
-            color: #f4faff;
-            margin: 0;
-            padding: 0;
+            background: var(--main-bg);
+            font-family: 'Cairo', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             min-height: 100vh;
-        }
-        .container, .admin-panel {
-            max-width: 420px;
-            margin: 36px auto 0 auto;
-            background: rgba(35,41,70,0.98);
-            border-radius: 20px;
-            box-shadow: 0 6px 36px 0 #000b;
-            padding: 35px 24px 26px 24px;
-        }
-        .container {
-            margin-top: 40px;
-            text-align: center;
-        }
-        h2 {
-            color: #00ffd0;
-            font-family: 'Share Tech Mono', monospace;
-            letter-spacing: 2px;
-            margin: 0 0 22px 0;
-            font-size: 2.1em;
-            text-shadow: 0 2px 12px #00ffd088;
-        }
-        .user-info {
-            background: #1b2232;
-            border-radius: 10px;
-            padding: 10px 13px 6px 13px;
-            margin: 0 0 24px 0;
-            color: #ffe066;
-            font-size: 1.08em;
-            text-align: right;
-        }
-        .game-box {
-            margin-bottom: 38px;
-        }
-        .luck-wheel {
-            margin: 0 auto 18px auto;
-            width: 180px;
-            height: 180px;
-            border-radius: 50%;
-            background: conic-gradient(
-                #ffe066 0 30deg,
-                #00ffd0 30deg 90deg,
-                #ff2255 90deg 150deg,
-                #a0f 150deg 210deg,
-                #00ffd0 210deg 270deg,
-                #ffe066 270deg 330deg,
-                #ff2255 330deg 360deg
-            );
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            margin: 0;
+            overflow: hidden;
+            color: var(--accent);
             position: relative;
-            box-shadow: 0 0 32px #00ffd0aa, 0 8px 30px #0009;
         }
-        .wheel-pointer {
+        .stars {
+            position: fixed;
+            width: 100vw; height: 100vh;
+            left: 0; top: 0; pointer-events:none; z-index:0;
+        }
+        .star {
             position: absolute;
-            top: -24px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 0; height: 0;
-            border-left: 18px solid transparent;
-            border-right: 18px solid transparent;
-            border-bottom: 28px solid #ffe066;
-            z-index: 10;
-            filter: drop-shadow(0 2px 7px #ffe06677);
+            width: 2px; height:2px;
+            background: var(--star);
+            border-radius: 50%;
+            opacity: 0.75;
+            animation: twinkle 2.2s infinite alternate;
         }
-        .wheel-btn {
-            font-family: 'Share Tech Mono', Cairo, monospace;
-            font-size: 1.15em;
-            background: linear-gradient(90deg, #00ffd0, #ffe066);
-            color: #232946;
-            font-weight: bold;
-            border-radius: 12px;
-            border: none;
-            cursor: pointer;
-            margin: 13px 0 0 0;
-            padding: 12px 44px;
-            box-shadow: 0 2px 12px #00ffd055;
-            transition: transform 0.1s;
+        @keyframes twinkle {
+            0% { opacity: 0.35;}
+            100% { opacity: 0.95;}
         }
-        .wheel-btn:active {
-            transform: scale(0.97);
+        .game-container {
+            width: 100vw; max-width: 430px; height: 98vh; margin: auto;
+            background: var(--container-bg); border-radius: 0 0 30px 30px;
+            box-shadow: var(--road-shadow);
+            border: none; position: relative; overflow: hidden;
+            border-top: 8px solid #00ffd066;
+            z-index: 2;
         }
-        .game-result {
-            font-size: 1.2em;
-            font-weight: bold;
-            min-height: 34px;
-            margin-top: 12px;
-            color: #ffe066;
-            text-shadow: 0 2px 8px #151b2c88;
+        .road {
+            width: 100%; height: 100%; background: var(--road-bg);
+            position: absolute; z-index: 1;
+            background-size: 100% 100%, 100% 120px;
+            background-repeat: repeat, repeat-y;
+            background-image:
+                repeating-linear-gradient(90deg, #222 0, #222 7%, #333 7%, #333 14%),
+                repeating-linear-gradient(0deg, transparent 0px, transparent 40px, #00ffd0 40px, #00ffd0 48px, transparent 48px, transparent 80px);
+            opacity:0.90;
+            box-shadow: 0 8px 60px #00ffd033;
+            animation: roadMove 0.6s linear infinite;
         }
-        .attempts-info {
-            margin-top: 16px;
-            color: #00ffd0;
-            font-size: 1.08em;
+        @keyframes roadMove {
+            0% { background-position: 0 0, 0 0;}
+            100% { background-position: 0 0, 0 80px;}
         }
-        .howto {
-            margin-top: 14px;
-            color: #ffe066c2;
-            font-size: 0.99rem;
-            line-height: 1.55;
-            text-align: right;
-            border-top: 1px dashed #00ffd055;
-            padding-top: 8px;
+        .ui-overlay {
+            position: absolute; top: 0; left: 0; right: 0; z-index: 20;
+            padding: 16px 20px 7px 20px;
+            background: linear-gradient(180deg, #222c 0%, transparent 100%);
+            color: #fff; font-size: 1rem;
         }
-        /* Admin panel */
-        .admin-panel {
-            margin-top: 40px;
+        .ui-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 7px;}
+        .score, .level {
+            font-weight: bold; background: var(--score-bg);
+            padding: 8px 16px; border-radius: 28px; font-size: 1.1rem;
+            border-bottom: 2px solid #00ffd080;
+            text-shadow: 0 1px 2px #0ffb;
+            box-shadow: 0 0 8px #00ffd022;
+        }
+        .health-bar { display: flex; gap: 6px;}
+        .health-heart {
+            font-size: 23px; filter: drop-shadow(0 0 10px #ffe066bb);
+            transition: all 0.2s;
+        }
+        .health-heart.lost { opacity: 0.13; transform: scale(0.5);}
+        .game-over, .start-screen, .pause-screen, .daily-locked {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, rgba(30,18,60,0.94) 0%, rgba(16,24,40,0.94) 100%);
+            color: #fff; padding: 36px 18px; border-radius: 27px; text-align: center; z-index: 50;
+            border: 2px solid #00ffd033; width: 95%; max-width: 350px; box-shadow: 0 2px 30px #00ffd044;
             display: none;
         }
-        .admin-panel.active {
-            display: block;
-            animation: fadein 0.7s;
+        .start-screen { display: block; }
+        .game-over h2, .start-screen h1, .pause-screen h2, .daily-locked h2 {
+            color: var(--accent); margin-bottom: 15px; font-size: 1.45rem; text-shadow: 0 0 12px #00ffd099;
+            letter-spacing: 2px;
         }
-        @keyframes fadein {
-            from { opacity: 0; transform: translateY(30px);}
-            to { opacity: 1;}
+        .btn {
+            background: linear-gradient(90deg, #00ffd0 0%, #ffe066 100%);
+            color: #002b36; border: none; padding: 13px 27px; border-radius: 27px; font-size: 1.15rem; font-weight: bold; cursor: pointer; margin: 12px 0;
+            box-shadow: 0 2px 13px #00ffd044; transition: 0.13s; border-bottom: 3px solid #ffe066cc;
         }
-        .admin-panel h3 {
-            color: #ffe066;
-            margin-bottom: 16px;
-            letter-spacing: 1px;
+        .btn:active { transform: scale(0.97);}
+        .control-zone {
+            position: absolute; bottom: 0; left: 0; right: 0; height: 75px;
+            background: linear-gradient(0deg, #222e 0%, transparent 90%);
+            display: flex; justify-content: space-between; align-items: center; padding: 10px 25px; z-index: 30;
         }
-        .admin-panel input, .admin-panel button {
-            font-size: 1.06rem;
-            padding: 7px 13px;
-            margin: 4px 0;
-            border-radius: 7px;
-            border: none;
-            outline: none;
+        .control-btn {
+            background: linear-gradient(45deg, #00ffd022, #ffe06644);
+            border: 2px solid #00ffd060; border-radius: 17px; color: #fff; font-size: 31px; cursor: pointer; padding: 15px 20px;
+            box-shadow: 0 1px 8px #00ffd022;
         }
-        .admin-panel input {
-            width: 44%;
-            margin-left: 6px;
+        .pause-btn {
+            position: absolute; top: 12px; right: 16px; z-index: 30;
+            background: linear-gradient(135deg, #00ffd022, #ffe06622);
+            border: none; border-radius: 50%; width: 43px; height: 43px; color: #ffe066; font-size: 21px; cursor: pointer;
+            box-shadow: 0 0 13px #00ffd044;
         }
-        .admin-panel button {
-            background: linear-gradient(90deg, #00ffd0, #ffe066);
-            color: #232946;
-            font-weight: bold;
-            cursor: pointer;
-            margin: 7px 2px;
-            border-bottom: 2.5px solid #ffe066aa;
+        .player-car {
+            width: 62px; height: 92px; position: absolute; bottom: 105px; left: 50%; transform: translateX(-50%);
+            border-radius: 30px 30px 17px 17px;
+            box-shadow: var(--car-shadow);
+            z-index: 15; cursor: grab; border: 2.5px solid #fff7b5;
+            transition: box-shadow 0.23s, background 0.18s;
+            border-bottom: 8px solid #00ffd099;
+            background: var(--car1);
+            display: flex; align-items: center; justify-content: center;
         }
-        .msg {
-            margin: 12px 0 0 0;
-            font-size: 1.09em;
-            color: #ffe066;
+        .player-car.shake {
+            animation: carShake 0.26s linear;
         }
-        .users-list {
-            margin-top: 18px;
-            max-height: 340px;
-            overflow-y: auto;
-            background: #171d2f;
-            border-radius: 8px;
-            padding: 8px 4px;
+        @keyframes carShake {
+            0% { transform: translateX(-50%) rotate(-2deg);}
+            25% { transform: translateX(-50%) rotate(2deg);}
+            50% { transform: translateX(-50%) rotate(-2deg);}
+            75% { transform: translateX(-50%) rotate(2deg);}
+            100% { transform: translateX(-50%) rotate(0);}
         }
-        table {
-            width: 100%;
-            background: #151b2c;
-            border-radius: 10px;
-            border-collapse: collapse;
-            font-size: 0.99em;
+        .car-emoji {
+            font-size: 44px; filter: drop-shadow(0 0 9px #00ffd0cc);
+            transition: filter 0.17s;
         }
-        th, td {
-            padding: 7px 5px;
-            text-align: center;
+        .obstacle-car {
+            width: 44px; height: 71px; position: absolute; z-index: 10;
+            background: linear-gradient(135deg, #444 50%, #00ffd0 100%);
+            border-radius: 21px 21px 9px 9px; border: 2.5px solid #ffe06633;
+            box-shadow: 0 0 17px #00ffd022;
+            animation: obsGlow 1.3s infinite alternate;
         }
-        th {
-            background: #232946;
-            color: #ffe066;
-            font-weight: bold;
-            letter-spacing: 1px;
+        @keyframes obsGlow {
+            0% { box-shadow: 0 0 10px #00ffd033; }
+            100% { box-shadow: 0 0 22px #00ffd066; }
         }
-        tr:nth-child(even) { background: #23294644;}
-        tr:hover { background: #23294666;}
-        .admin-actions button {
-            font-size: 0.95em;
-            padding: 5px 12px;
-            margin: 0 2px;
+        .obstacle-car::before {
+            content: '🚙'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            font-size: 32px; filter: drop-shadow(0 0 2px #ffe06666);
         }
-        .search-bar {
-            margin: 10px 0 8px 0;
-            display: flex;
-            justify-content: flex-end;
+        .coin-item {
+            width: 43px; height: 43px; position: absolute; z-index: 12;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 50%; border: 3px solid #fffbe6; background: #121f2a;
+            box-shadow: var(--coin-glow), 0 0 0 6px #00ffd033 inset;
+            animation: coinSpin 1.5s infinite linear;
         }
-        .search-bar input {
-            width: 54%;
-            font-size: 1em;
-            background: #232946;
-            color: #00ffd0;
-            border: 1.5px solid #00ffd066;
+        @keyframes coinSpin { 0%{transform:scale(1) rotateY(0)} 100%{transform:scale(1.13) rotateY(360deg)} }
+        .coin-pic { width: 34px; height: 34px; border-radius: 50%; }
+        .coin-label {
+            position: absolute; bottom: -21px; left: 50%; transform: translateX(-50%); font-size: 13px;
+            color: #ffe066; background: #212d39cc; border-radius: 9px; padding: 1px 8px;
+            border: 1.3px solid #00ffd099; box-shadow: 0 1px 6px #00ffd044;
         }
-        .admin-panel .logout-btn {
-            background: #ff2255;
-            color: #fff;
-            margin: 5px 0 12px 0;
-            border-radius: 6px;
-            padding: 7px 24px;
-            font-size: 1.04em;
+        .car-select {
+            display: flex; justify-content: center; gap: 18px; margin: 13px 0 9px 0;
         }
-        .badge {
-            display: inline-block;
-            background: #00ffd080;
-            color: #232946;
-            font-size: 0.85em;
-            border-radius: 8px;
-            padding: 1px 10px 0 10px;
-            margin-right: 2px;
-            font-family: 'Cairo', sans-serif;
+        .car-choice {
+            width: 52px; height: 75px; border-radius: 17px 17px 11px 11px;
+            border: 3px solid #fff7b5; box-shadow: 0 0 9px #ffe06666;
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            background: var(--car1); transition: border 0.19s, background 0.18s;
+            position: relative;
+            margin-bottom: 7px;
         }
-        .badge.admin { background: #ffe066b0; color: #232946; }
-        .badge.lucky { background: #ff2255c0; color: #fff; }
-        .badge.active { background: #00ffd0c0; color: #232946;}
-        .wheel-spin-anim {
-            animation: spin 2.3s cubic-bezier(.22,.99,.46,1.01) 1;
+        .car-choice.selected { border: 3.5px solid #00ffd0; box-shadow: 0 0 14px #00ffd0cc;}
+        .car-choice:nth-child(1) { background: var(--car1);}
+        .car-choice:nth-child(2) { background: var(--car2);}
+        .car-choice:nth-child(3) { background: var(--car3);}
+        .car-choice:nth-child(4) { background: var(--car4);}
+        .car-choice:nth-child(5) { background: var(--car5);}
+        .car-choice .car-emoji { font-size: 33px;}
+        .car-choice .car-label {
+            position: absolute; bottom: -15px; left: 50%; transform: translateX(-50%);
+            color: #fffbe6; font-size: 13px; background: #2c3e508c; border-radius: 7px; padding: 0 7px;
+            border: 1px solid #ffe06688; box-shadow: 0 0 5px #ffe06622;
         }
-        @keyframes spin {
-            0% { transform: rotate(0deg);}
-            80% { transform: rotate(1100deg);}
-            100% { transform: rotate(var(--angle,1100deg));}
+        .high-score-badge {
+            position: absolute; top: 11px; left: 50%; transform: translateX(-50%);
+            background: linear-gradient(45deg, #00ffd0, #ffe066);
+            color: #003; padding: 5px 16px; border-radius: 16px; font-weight: bold; font-size: 15px;
+            z-index: 26; display: none; box-shadow: 0 0 9px #00ffd044;
+        }
+        .leaderboard { margin: 34px auto 10px auto; text-align: center; max-width: 320px;}
+        .leaderboard h3 { color: #ffe066; margin-bottom: 10px; font-size: 1.18rem;}
+        .leaderboard ol { padding: 0 0 0 19px; margin: 0; text-align: start;}
+        .leaderboard li { color:#fffbe7; font-size: 1.09rem; margin-bottom: 4px; }
+        .today-row { color: #00ffd0; font-weight: bold; }
+        @media (max-width: 600px) {
+            .game-container { max-width: 100vw; border-radius: 0; }
+            .game-over, .start-screen, .pause-screen, .daily-locked { max-width: 99vw; }
         }
     </style>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@700;400&display=swap" rel="stylesheet">
 </head>
 <body>
-<div class="container" id="gameContainer">
-    <h2>لعبة الحظ الكبرى 🔮</h2>
-    <div class="user-info" id="userInfo"></div>
-    <div class="game-box">
-        <div class="luck-wheel" id="luckWheel">
-            <div class="wheel-pointer"></div>
-            <span id="wheelCenter" style="font-family:'Share Tech Mono',monospace;font-size:2.3em;color:#232946;z-index:2;">?</span>
+    <div class="stars" id="stars"></div>
+    <div class="game-container" id="gameContainer">
+        <div class="road" id="road"></div>
+        <div class="ui-overlay">
+            <div class="ui-top">
+                <div class="score">🪙 <span id="score">0</span></div>
+                <div class="level">🚀 <span id="level">1</span></div>
+            </div>
+            <div class="ui-bottom" style="display: flex; justify-content: space-between; align-items: center; font-size: 14px;">
+                <div class="health-bar" id="healthBar">
+                    <span class="health-heart">💠</span>
+                </div>
+            </div>
         </div>
-        <button class="wheel-btn" onclick="spinWheel()" id="playBtn">جرب حظك الآن!</button>
-        <div class="game-result" id="gameResult"></div>
+        <div class="high-score-badge" id="highScoreBadge" style="display:none;">
+            🏅 رقمك اليومي: <span id="highScoreValue">0</span>
+        </div>
+        <button class="pause-btn" id="pauseBtn" onclick="togglePause()">⏸️</button>
+        <div class="player-car" id="playerCar" data-emoji="🚗"><span class="car-emoji" id="carEmoji">🚗</span></div>
+        <!-- Start Screen -->
+        <div class="start-screen" id="startScreen">
+            <h1>🚗✨ جامع العملات الأسطوري</h1>
+            <div style="margin: 0 0 18px 0; font-size: 17px; color: #00ffd0; font-weight:bold;">
+                تحدي يومي واحد فقط<br>في عالم نجوم وسحر وسرعة!<br>كم عملة ستجمع؟
+            </div>
+            <div class="car-select" id="carSelect">
+                <div class="car-choice selected" data-car="0"><span class="car-emoji">🚗</span><div class="car-label">كلاسيك</div></div>
+                <div class="car-choice" data-car="1"><span class="car-emoji">🚙</span><div class="car-label">جبل</div></div>
+                <div class="car-choice" data-car="2"><span class="car-emoji">🏎️</span><div class="car-label">سباق</div></div>
+                <div class="car-choice" data-car="3"><span class="car-emoji">🚕</span><div class="car-label">تاكسي</div></div>
+                <div class="car-choice" data-car="4"><span class="car-emoji">🚓</span><div class="car-label">شرطة</div></div>
+            </div>
+            <button class="btn" id="startBtn" onclick="startGame()">🚦 ابدأ التحدي</button>
+            <div class="leaderboard" id="leaderboardBox"></div>
+        </div>
+        <!-- Locked Screen -->
+        <div class="daily-locked" id="lockedScreen">
+            <h2>⏳ انتهت محاولتك!</h2>
+            <div style="margin: 13px 0 16px 0;">
+                يمكنك المحاولة مجددًا غدًا.<br>
+                رقمك اليوم: <span id="todayScore">0</span>
+            </div>
+            <div class="leaderboard" id="leaderboardBoxLocked"></div>
+        </div>
+        <!-- Game Over Screen -->
+        <div class="game-over" id="gameOver">
+            <h2>💥 انتهت!</h2>
+            <div style="margin: 10px 0 17px 0;">
+                <div>النقاط اليوم: <span id="finalScore">0</span></div>
+                <div>المستوى: <span id="finalLevel">1</span></div>
+            </div>
+            <button class="btn" onclick="returnToLock()">تم</button>
+        </div>
+        <!-- Pause Screen -->
+        <div class="pause-screen" id="pauseScreen">
+            <h2>⏸️ مؤقت</h2>
+            <button class="btn" onclick="togglePause()">▶️ استئناف</button>
+        </div>
+        <!-- Control Zone -->
+        <div class="control-zone">
+            <button class="control-btn" id="leftBtn">⬅️</button>
+            <div style="flex: 1;"></div>
+            <button class="control-btn" id="rightBtn">➡️</button>
+        </div>
     </div>
-    <div class="attempts-info" id="attemptsInfo"></div>
-    <div class="howto">
-        ⭐ لديك محاولة واحدة فقط يوميًا.<br>
-        🎯 إذا انتهت محاولتك، اطلب من الأدمن أن يرجعها.<br>
-        🌀 استمتع بالدوران، قد تربح جائزة أو رسالة سرية!<br>
-        🛡️ معرفك محفوظ ولن يستطيع غيرك اللعب بنفس الحساب.<br>
-        <b>ملاحظة:</b> كل محاولاتك تسجل تلقائيًا في النظام.<br>
-    </div>
-</div>
-
-<div class="admin-panel" id="adminPanel">
-    <h3>👑 لوحة تحكم الأدمن</h3>
-    <button class="logout-btn" onclick="logoutAdmin()">خروج الأدمن</button>
-    <div class="search-bar">
-        <input type="text" id="searchUser" placeholder="بحث عن مستخدم..." oninput="refreshUsers()">
-    </div>
-    <form id="userForm" onsubmit="return false;">
-        <input type="text" id="adminUserId" placeholder="معرف المستخدم (userId)">
-        <input type="number" min="0" id="attemptsInput" placeholder="عدد المحاولات">
-        <button onclick="setAttempts()">تعيين المحاولات</button>
-        <button onclick="restoreAttempt()">إرجاع محاولة (1)</button>
-        <button onclick="resetAttempts()">تصفير المحاولات (0)</button>
-    </form>
-    <div class="msg" id="msg"></div>
-    <div class="users-list" id="usersList"></div>
-</div>
-
+<audio id="bgSound" src="assets/sound.mp3" loop></audio>
 <script>
-// ========== إعدادات ==========
-const ADMIN_TELEGRAM_USERNAME = "u_bil";  // غير هذا ليوزر الأدمن في تيليجرام
-const ADMIN_SECRET = "admin-super-2024"; // غير هذا لرمز رابط الأدمن الخاص
+// نجوم في الخلفية
+function createStars() {
+    const cont = document.getElementById('stars');
+    const w = window.innerWidth, h = window.innerHeight;
+    for (let i = 0; i < 110; i++) {
+        let s = document.createElement('div');
+        s.className = "star";
+        s.style.left = Math.random() * w + "px";
+        s.style.top = Math.random() * h + "px";
+        s.style.width = s.style.height = (Math.random()*1.8 + 1.3) + "px";
+        s.style.opacity = Math.random()*0.65 + 0.35;
+        s.style.animationDuration = (Math.random()*2.2 + 1.5) + "s";
+        cont.appendChild(s);
+    }
+}
+createStars();
 
-// ========== نظام المستخدمين ==========
-function getAllUsers() {
-    let users = localStorage.getItem("luckGameUsers");
-    users = users ? JSON.parse(users) : {};
-    return users;
-}
-function saveAllUsers(users) {
-    localStorage.setItem("luckGameUsers", JSON.stringify(users));
-}
-function getUser(userId) {
-    let users = getAllUsers();
-    return users[userId] || null;
-}
-function setUser(userId, attempts, displayName="", isAdmin=false) {
-    let users = getAllUsers();
-    users[userId] = users[userId] || {};
-    users[userId].attempts = attempts;
-    if (displayName) users[userId].displayName = displayName;
-    if (isAdmin!==undefined) users[userId].isAdmin = !!isAdmin;
-    if (!users[userId].joinedAt) users[userId].joinedAt = new Date().toISOString();
-    saveAllUsers(users);
-}
-function setUserAttempts(userId, attempts) {
-    let users = getAllUsers();
-    let user = users[userId] || {};
-    user.attempts = attempts;
-    users[userId] = user;
-    saveAllUsers(users);
-}
-function resetUserAttempts(userId) { setUserAttempts(userId, 0); }
-function restoreUserAttempt(userId) { setUserAttempts(userId, 1); }
-function deleteUser(userId) {
-    let users = getAllUsers();
-    delete users[userId];
-    saveAllUsers(users);
+// الأصوات (غيّر المسار حسب ملفاتك)
+const sounds = {
+    die:      new Audio('assets/die.mp3'),
+    coin:     new Audio('assets/coin.mp3'),
+    crash:    new Audio('assets/crash.mp3'),
+    bg:       document.getElementById('bgSound')
+};
+const coinImage = "assets/coin.png";
+const coinType = { name: "ذهب أسطوري", points: 10, img: coinImage };
+
+// سيارات متنوعة
+const carEmojis = ["🚗","🚙","🏎️","🚕","🚓"];
+const carBgVars = ["var(--car1)","var(--car2)","var(--car3)","var(--car4)","var(--car5)"];
+let selectedCar = 0;
+
+let gameState = {
+    score: 0, level: 1, speed: 4.2, gameRunning: false, gamePaused: false,
+    playerPosition: 50, health: 1, objects: []
+};
+const playerCar = document.getElementById('playerCar');
+const carEmoji = document.getElementById('carEmoji');
+const carSelect = document.getElementById('carSelect');
+const gameContainer = document.getElementById('gameContainer');
+const road = document.getElementById('road');
+const scoreElement = document.getElementById('score');
+const levelElement = document.getElementById('level');
+const healthBar = document.getElementById('healthBar');
+const startScreen = document.getElementById('startScreen');
+const lockedScreen = document.getElementById('lockedScreen');
+const gameOverElement = document.getElementById('gameOver');
+const pauseScreen = document.getElementById('pauseScreen');
+const highScoreBadge = document.getElementById('highScoreBadge');
+const leaderboardBox = document.getElementById('leaderboardBox');
+const leaderboardBoxLocked = document.getElementById('leaderboardBoxLocked');
+const todayScoreEl = document.getElementById('todayScore');
+
+let isDragging = false, dragStartX = 0, playerStartPos = 0;
+let todayKey = getTodayKey();
+let speedUpInterval;
+
+function getTodayKey() {
+    let now = new Date();
+    return now.getFullYear() + '-' + (now.getMonth()+1).toString().padStart(2,'0') + '-' + now.getDate().toString().padStart(2,'0');
 }
 
-// ========== جلب يوزر تيليجرام تلقائي ==========
-let CURRENT_USER_ID = "";
-let IS_ADMIN = false;
-let CURRENT_USER_NAME_DISPLAY = "";
-let CURRENT_USER_FULLNAME = "";
-let isWebAppTelegram = false;
-
-if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe && window.Telegram.WebApp.initDataUnsafe.user) {
-    isWebAppTelegram = true;
-    const tgUser = window.Telegram.WebApp.initDataUnsafe.user;
-    if (tgUser.username) {
-        CURRENT_USER_ID = tgUser.username;
-        CURRENT_USER_NAME_DISPLAY = "@" + tgUser.username;
+function createObject() {
+    let rand = Math.random(), obj;
+    // عملة: 20%  عقبة: 80%
+    if (rand < 0.2) {
+        obj = document.createElement('div');
+        obj.className = 'coin-item'; obj.dataset.type = 'coin';
+        obj.dataset.points = coinType.points;
+        obj.dataset.name = coinType.name;
+        let img = document.createElement('img');
+        img.className = "coin-pic";
+        img.src = coinType.img;
+        img.alt = coinType.name;
+        obj.appendChild(img);
+        let label = document.createElement('span');
+        label.className = "coin-label";
+        label.textContent = coinType.name;
+        obj.appendChild(label);
     } else {
-        CURRENT_USER_ID = "tg_" + tgUser.id;
-        CURRENT_USER_NAME_DISPLAY = "ID: " + tgUser.id;
+        obj = document.createElement('div');
+        obj.className = 'obstacle-car'; obj.dataset.type = 'obstacle';
     }
-    CURRENT_USER_FULLNAME = (tgUser.first_name||"") + (tgUser.last_name ? " " + tgUser.last_name : "");
-    IS_ADMIN = (tgUser.username && tgUser.username.toLowerCase() === ADMIN_TELEGRAM_USERNAME.toLowerCase());
-} else {
-    // خارج تيليجرام (للتجربة فقط)
-    CURRENT_USER_ID = localStorage.getItem("currentUserId");
-    if (!CURRENT_USER_ID) {
-        CURRENT_USER_ID = prompt("أدخل يوزرك تيليجرام (username فقط):", "user_" + Math.floor(Math.random()*10000));
-        localStorage.setItem("currentUserId", CURRENT_USER_ID);
-    }
-    CURRENT_USER_NAME_DISPLAY = CURRENT_USER_ID;
-    CURRENT_USER_FULLNAME = CURRENT_USER_ID;
-    IS_ADMIN = (CURRENT_USER_ID.toLowerCase() === ADMIN_TELEGRAM_USERNAME.toLowerCase());
+    obj.style.left = (Math.random() * 68 + 14) + '%'; obj.style.top = '-75px';
+    gameContainer.appendChild(obj); gameState.objects.push(obj);
 }
-
-// ========== حماية صفحة الأدمن ==========
-function showAdminPanel() {
-    document.getElementById('adminPanel').classList.add('active');
-    document.getElementById('gameContainer').style.display = "none";
-    refreshUsers();
+function updateObjects() {
+    gameState.objects.forEach((obj, i) => {
+        const currentTop = parseFloat(obj.style.top);
+        let moveSpeed = gameState.speed;
+        let newTop = currentTop + moveSpeed;
+        obj.style.top = newTop + 'px';
+        // Collision
+        if (newTop > 420 && newTop < 600) {
+            let objLeft = parseFloat(obj.style.left), playerLeft = gameState.playerPosition;
+            if (Math.abs(objLeft - playerLeft) < 18) handleCollision(obj, i);
+        }
+        if (newTop > 800) removeObject(obj, i);
+    });
 }
-function hideAdminPanel() {
-    document.getElementById('adminPanel').classList.remove('active');
-    document.getElementById('gameContainer').style.display = "block";
+function handleCollision(obj, i) {
+    let type = obj.dataset.type;
+    if (type === 'obstacle') { takeDamage(); removeObject(obj, i);}
+    else if (type === 'coin') { collectCoin(obj); removeObject(obj, i);}
 }
-function logoutAdmin() {
-    window.location.hash = "";
-    hideAdminPanel();
+function takeDamage() {
+    gameState.health--; updateUI();
+    playerCar.classList.add("shake");
+    sounds.crash.currentTime = 0; sounds.crash.play();
+    setTimeout(() => { playerCar.classList.remove("shake"); }, 270);
+    setTimeout(() => { playerCar.style.opacity = '1'; }, 800);
+    if (gameState.health <= 0) gameOver();
 }
-
-// تفعيل الأدمن إما برابط سري أو إذا هو يوزر الأدمن
-if (window.location.hash === "#"+ADMIN_SECRET || IS_ADMIN) {
-    showAdminPanel();
-} else {
-    hideAdminPanel();
+function collectCoin(obj) {
+    let pts = 10;
+    gameState.score += pts;
+    sounds.coin.currentTime = 0; sounds.coin.play();
+    updateUI();
+    // كل 120 نقطة صعود مستوى وزيادة سرعة
+    if (gameState.score >= gameState.level * 120) levelUp();
 }
-
-// ========== عرض معلومات المستخدم ==========
-function displayUserInfo() {
-    let el = document.getElementById('userInfo');
-    let badges = "";
-    if (IS_ADMIN) badges += `<span class="badge admin">أدمن</span>`;
-    el.innerHTML = `<b>معرفك تيليجرام:</b> <span style="color:#00ffd0">${CURRENT_USER_NAME_DISPLAY}</span>
-        ${CURRENT_USER_FULLNAME && CURRENT_USER_FULLNAME !== CURRENT_USER_ID ? "<br><b>الاسم:</b> "+CURRENT_USER_FULLNAME : ""}
-        ${badges}`;
+function updateUI() {
+    scoreElement.textContent = gameState.score;
+    levelElement.textContent = gameState.level;
+    let hearts = healthBar.querySelectorAll('.health-heart');
+    hearts.forEach((h, i) => { if (i < gameState.health) h.classList.remove('lost'); else h.classList.add('lost'); });
 }
-displayUserInfo();
-
-// ========== تسجيل المستخدم تلقائي ==========
-function autoRegisterUser() {
-    let user = getUser(CURRENT_USER_ID);
-    if (!user) {
-        setUser(CURRENT_USER_ID, 1, CURRENT_USER_FULLNAME || CURRENT_USER_ID, IS_ADMIN);
-    }
+function removeObject(obj, index) {
+    if (obj.parentNode) obj.parentNode.removeChild(obj); gameState.objects.splice(index, 1);
 }
-autoRegisterUser();
-updateAttemptsOnScreen();
-
-// ========== لعبة الحظ ==========
-const wheelSectors = [
-    { name: "مبروك! 🎉 كسبت 10 نقاط", color: "#ffe066", type: "win", prize: 10 },
-    { name: "حظ أوفر! 😅", color: "#00ffd0", type: "lose", prize: 0 },
-    { name: "جائزة سرية! 🕵️", color: "#ff2255", type: "secret", prize: "كود خاص" },
-    { name: "إعادة محاولة! 🔄", color: "#a0f", type: "retry", prize: "retry" },
-    { name: "مبروك! 🎁 كرت هدية", color: "#00ffd0", type: "win", prize: "giftcard" },
-    { name: "حظ أوفر! 😅", color: "#ffe066", type: "lose", prize: 0 },
-    { name: "مبروك! ⭐ نجمة", color: "#ff2255", type: "win", prize: "star" },
-    { name: "حظ أوفر! 😅", color: "#a0f", type: "lose", prize: 0 }
-];
-let isSpinning = false;
-
-function spinWheel() {
-    if (isSpinning) return;
-    let user = getUser(CURRENT_USER_ID);
-    if (!user || user.attempts <= 0) {
-        showStatus("❌ انتهت محاولتك! اطلب من الأدمن إرجاعها.", true);
+function gameOver() {
+    gameState.gameRunning = false;
+    document.getElementById('finalScore').textContent = gameState.score;
+    document.getElementById('finalLevel').textContent = gameState.level;
+    saveTodayScore(gameState.score);
+    drawLeaderboard();
+    sounds.die.currentTime = 0; sounds.die.play();
+    sounds.bg.pause();
+    gameOverElement.style.display = 'block';
+    playerCar.style.opacity = '0.65';
+    clearInterval(speedUpInterval);
+}
+function togglePause() {
+    if (!gameState.gameRunning) return;
+    gameState.gamePaused = !gameState.gamePaused;
+    pauseScreen.style.display = gameState.gamePaused ? 'block' : 'none';
+    document.getElementById('pauseBtn').textContent = gameState.gamePaused ? '▶️' : '⏸️';
+    if (!gameState.gamePaused) gameLoop();
+    if (gameState.gamePaused) sounds.bg.pause(); else sounds.bg.play();
+}
+function startGame() {
+    if (isTodayPlayed()) {
+        showLockedScreen();
         return;
     }
-    isSpinning = true;
-    document.getElementById('playBtn').disabled = true;
-    showStatus("الدولاب يدور...", false);
-    // اختيار عشوائي
-    const sectorIdx = Math.floor(Math.random()*wheelSectors.length);
-    const sector = wheelSectors[sectorIdx];
-    // دوران الدولاب
-    let fullRounds = 3;
-    let degPerSector = 360 / wheelSectors.length;
-    let angle = 360*fullRounds + (wheelSectors.length - sectorIdx - 0.5)*degPerSector;
-    let wheel = document.getElementById('luckWheel');
-    wheel.style.setProperty('--angle', angle + "deg");
-    wheel.classList.remove('wheel-spin-anim');
-    setTimeout(()=>{ wheel.classList.add('wheel-spin-anim'); }, 50);
-
-    setTimeout(()=>{
-        // عرض النتيجة
-        document.getElementById('wheelCenter').textContent = "?";
-        let msg = "";
-        if (sector.type === "win") {
-            msg = "🎉 " + sector.name;
-        } else if (sector.type === "lose") {
-            msg = "😅 " + sector.name;
-        } else if (sector.type === "secret") {
-            msg = "🕵️ جائزة سرية! تواصل مع الأدمن.";
-        } else if (sector.type === "retry") {
-            msg = "🔄 حصلت على محاولة إضافية!";
-            setUserAttempts(CURRENT_USER_ID, user.attempts); // لا تخصم المحاولة
-            updateAttemptsOnScreen();
+    // إعداد السيارة المختارة
+    playerCar.style.background = carBgVars[selectedCar];
+    carEmoji.textContent = carEmojis[selectedCar];
+    // إعادة تعيين اللعبة
+    gameState = { ...gameState, score: 0, level: 1, speed: 4.2, gameRunning: true, gamePaused: false, playerPosition: 50, health: 1, objects: [] };
+    updateUI(); startScreen.style.display = 'none'; gameOverElement.style.display = 'none'; pauseScreen.style.display = 'none'; lockedScreen.style.display = 'none';
+    playerCar.style.left = '50%'; playerCar.style.opacity = '1';
+    clearAllObjects();
+    if (speedUpInterval) clearInterval(speedUpInterval);
+    // صوت الخلفية
+    try { sounds.bg.currentTime = 0; sounds.bg.play(); } catch(e){}
+    speedUpInterval = setInterval(() => {
+        if (gameState.gameRunning && !gameState.gamePaused && gameState.speed < 15) {
+            gameState.speed += 0.12;
         }
-        document.getElementById('gameResult').textContent = msg;
-        // حفظ نتيجة الدوران (مثلاً في قاعدة بيانات لاحقاً)
-        if (sector.type !== "retry") {
-            setUserAttempts(CURRENT_USER_ID, user.attempts - 1);
-            updateAttemptsOnScreen();
-        }
-        // وضع علامة حظ سعيد إذا ربح
-        if (sector.type === "win" || sector.type === "secret") {
-            let users = getAllUsers();
-            users[CURRENT_USER_ID].lucky = true;
-            saveAllUsers(users);
-        }
-        isSpinning = false;
-        document.getElementById('playBtn').disabled = false;
-        document.getElementById('wheelCenter').textContent = sectorIdx+1;
-    }, 2450);
+    }, 1000);
+    gameLoop();
 }
-
-function showStatus(msg, isErr) {
-    let el = document.getElementById('gameResult');
-    el.textContent = msg;
-    el.style.color = isErr ? "#ff2255" : "#ffe066";
+function returnToLock() { showLockedScreen(); }
+function showLockedScreen() {
+    let todayScore = getTodayScore();
+    todayScoreEl.textContent = todayScore;
+    drawLeaderboard();
+    startScreen.style.display = 'none';
+    gameOverElement.style.display = 'none';
+    pauseScreen.style.display = 'none';
+    lockedScreen.style.display = 'block';
+    clearInterval(speedUpInterval);
+    sounds.bg.pause();
 }
-function updateAttemptsOnScreen() {
-    let user = getUser(CURRENT_USER_ID);
-    document.getElementById('attemptsInfo').innerHTML =
-        user ? `محاولاتك المتبقية: <span style="color:#ffe066;font-weight:bold">${user.attempts}</span>` : "";
+function clearAllObjects() {
+    gameState.objects.forEach(obj => { if (obj.parentNode) obj.parentNode.removeChild(obj); }); gameState.objects = [];
 }
-
-// ========== ADMIN PANEL ==========
-function setAttempts() {
-    let userId = document.getElementById('adminUserId').value.trim();
-    let val = Number(document.getElementById('attemptsInput').value);
-    if (!userId || isNaN(val) || val < 0) {
-        showMsg("أدخل معرف وعدد محاولات صحيح.");
-        return false;
+function gameLoop() {
+    if (!gameState.gameRunning || gameState.gamePaused) return;
+    let spawnRate = 0.07 + (gameState.level * 0.035);
+    if (Math.random() < spawnRate) createObject();
+    updateObjects();
+    requestAnimationFrame(gameLoop);
+}
+function levelUp() {
+    gameState.level++; gameState.speed += 0.7;
+    updateUI();
+    road.style.animationDuration = Math.max(0.08, 0.6 - (gameState.level * 0.04)) + 's';
+}
+// تحكم
+function initControls() {
+    playerCar.addEventListener('mousedown', startDrag);
+    document.addEventListener('mousemove', drag);
+    document.addEventListener('mouseup', endDrag);
+    playerCar.addEventListener('touchstart', startDrag, { passive: false });
+    document.addEventListener('touchmove', drag, { passive: false });
+    document.addEventListener('touchend', endDrag, { passive: false });
+    document.getElementById('leftBtn').addEventListener('touchstart', e => { e.preventDefault(); movePlayer('left'); });
+    document.getElementById('rightBtn').addEventListener('touchstart', e => { e.preventDefault(); movePlayer('right'); });
+    document.addEventListener('keydown', e => {
+        if (e.key === 'ArrowLeft' || e.key.toLowerCase() === 'a') movePlayer('left');
+        else if (e.key === 'ArrowRight' || e.key.toLowerCase() === 'd') movePlayer('right');
+        else if (e.key === ' ' || e.key === 'Escape') { e.preventDefault(); togglePause(); }
+    });
+    // اختيار السيارة
+    carSelect.querySelectorAll('.car-choice').forEach(choice=>{
+        choice.onclick = ()=>{
+            carSelect.querySelectorAll('.car-choice').forEach(c=>c.classList.remove('selected'));
+            choice.classList.add('selected');
+            selectedCar = parseInt(choice.getAttribute('data-car'));
+        };
+    });
+}
+function startDrag(e) {
+    if (!gameState.gameRunning || gameState.gamePaused) return;
+    isDragging = true;
+    dragStartX = e.clientX || (e.touches && e.touches[0].clientX);
+    playerStartPos = gameState.playerPosition;
+}
+function drag(e) {
+    if (!isDragging || !gameState.gameRunning || gameState.gamePaused) return;
+    let clientX = e.clientX || (e.touches && e.touches[0].clientX);
+    let deltaX = clientX - dragStartX;
+    let containerWidth = gameContainer.offsetWidth;
+    let percentageMove = (deltaX / containerWidth) * 100;
+    let newPosition = playerStartPos + percentageMove;
+    newPosition = Math.max(12, Math.min(88, newPosition));
+    gameState.playerPosition = newPosition;
+    playerCar.style.left = gameState.playerPosition + '%';
+}
+function endDrag() { isDragging = false; }
+function movePlayer(dir) {
+    if (!gameState.gameRunning || gameState.gamePaused) return;
+    let moveAmount = 14;
+    if (dir === 'left' && gameState.playerPosition > 12) gameState.playerPosition -= moveAmount;
+    else if (dir === 'right' && gameState.playerPosition < 88) gameState.playerPosition += moveAmount;
+    gameState.playerPosition = Math.max(12, Math.min(88, gameState.playerPosition));
+    playerCar.style.left = gameState.playerPosition + '%';
+}
+// حفظ واسترجاع النقاط اليومية
+function saveTodayScore(score) {
+    let board = getLeaderboard();
+    board[todayKey] = score;
+    localStorage.setItem("dailyLeaderboard", JSON.stringify(board));
+}
+function getTodayScore() {
+    let board = getLeaderboard();
+    return board[todayKey] || 0;
+}
+function isTodayPlayed() {
+    let board = getLeaderboard();
+    return !!board[todayKey];
+}
+function getLeaderboard() {
+    let data = localStorage.getItem("dailyLeaderboard");
+    return data ? JSON.parse(data) : {};
+}
+function drawLeaderboard() {
+    let board = getLeaderboard();
+    let arr = Object.entries(board)
+        .map(([date, score]) => ({date, score: parseInt(score)}))
+        .sort((a, b) => b.date.localeCompare(a.date));
+    let html = "<h3>لوحة صدارة الأيام السابقة</h3><ol>";
+    arr.forEach(row => {
+        let isToday = row.date === todayKey;
+        html += `<li class="${isToday ? 'today-row' : ''}">${row.date}: <b>${row.score}</b></li>`;
+    });
+    html += "</ol>";
+    leaderboardBox.innerHTML = html;
+    leaderboardBoxLocked.innerHTML = html;
+    let today = arr.find(x=>x.date === todayKey);
+    if (today) {
+        highScoreBadge.style.display = 'block';
+        document.getElementById('highScoreValue').textContent = today.score;
     }
-    let user = getUser(userId);
-    if (!user) setUser(userId, val);
-    else setUserAttempts(userId, val);
-    showMsg("تم تعيين " + val + " محاولة للمستخدم " + userId);
-    refreshUsers();
-    return false;
-}
-function restoreAttempt() {
-    let userId = document.getElementById('adminUserId').value.trim();
-    let user = getUser(userId);
-    if (!userId || !user) { showMsg("أدخل معرف مستخدم صحيح موجود!"); return false; }
-    restoreUserAttempt(userId);
-    showMsg("تم إرجاع محاولة واحدة للمستخدم " + userId);
-    refreshUsers();
-    return false;
-}
-function resetAttempts() {
-    let userId = document.getElementById('adminUserId').value.trim();
-    let user = getUser(userId);
-    if (!userId || !user) { showMsg("أدخل معرف مستخدم صحيح موجود!"); return false; }
-    resetUserAttempts(userId);
-    showMsg("تم تصفير المحاولات للمستخدم " + userId);
-    refreshUsers();
-    return false;
-}
-function showMsg(msg) {
-    let el = document.getElementById('msg');
-    el.textContent = msg;
-    setTimeout(()=>{el.textContent=''}, 3200);
-}
-function refreshUsers() {
-    let users = getAllUsers();
-    let search = document.getElementById('searchUser')?.value?.trim()||"";
-    let html = "<h3>كل المستخدمين المسجلين</h3>";
-    let keys = Object.keys(users).concat([]);
-    if (search) {
-        keys = keys.filter(uid =>
-            uid.toLowerCase().includes(search.toLowerCase()) ||
-            (users[uid].displayName && users[uid].displayName.toLowerCase().includes(search.toLowerCase()))
-        );
-    }
-    if (keys.length === 0) {
-        html += "<div>لا يوجد مستخدمين بعد.</div>";
-    } else {
-        html += `<table>
-            <tr><th>معرف المستخدم</th><th>الاسم</th><th>محاولات</th><th>منذ</th><th>شارات</th><th>إجراءات</th></tr>`;
-        keys.sort((a,b)=>users[b].joinedAt?.localeCompare(users[a].joinedAt));
-        keys.forEach(userId => {
-            let user = users[userId];
-            let badges = "";
-            if (user.isAdmin) badges += `<span class="badge admin">أدمن</span>`;
-            if (user.lucky) badges += `<span class="badge lucky">محظوظ</span>`;
-            if (user.attempts>0) badges += `<span class="badge active">نشط</span>`;
-            html += `<tr>
-                <td>${userId}</td>
-                <td>${user.displayName||""}</td>
-                <td>${user.attempts||0}</td>
-                <td>${user.joinedAt ? timeAgo(user.joinedAt) : ""}</td>
-                <td>${badges}</td>
-                <td class="admin-actions">
-                    <button onclick="restoreUserAttempt('${userId}');refreshUsers();">1 محاولة</button>
-                    <button onclick="resetUserAttempts('${userId}');refreshUsers();">تصفير</button>
-                    <button onclick="deleteUser('${userId}');refreshUsers();">حذف</button>
-                </td>
-            </tr>`;
-        });
-        html += "</table>";
-    }
-    document.getElementById('usersList').innerHTML = html;
-}
-window.restoreUserAttempt = restoreUserAttempt;
-window.resetUserAttempts = resetUserAttempts;
-window.deleteUser = deleteUser;
-window.refreshUsers = refreshUsers;
-
-// ========== أدوات مساعدة ==========
-function timeAgo(dateStr) {
-    let d = new Date(dateStr);
-    let now = new Date();
-    let diff = (now - d)/1000;
-    if (diff < 60) return "الآن";
-    let m = Math.floor(diff/60);
-    if (m<60) return `${m} دقيقة`;
-    let h = Math.floor(m/60);
-    if (h<24) return `${h} ساعة`;
-    let d2 = Math.floor(h/24);
-    return `${d2} يوم`;
 }
 
-// تحديث المحاولات عند أي حدث
-document.getElementById('playBtn').addEventListener('click', updateAttemptsOnScreen);
-
-// عند دخول الأدمن، تحديث القائمة تلقائياً
-if (document.getElementById('adminPanel').classList.contains('active')) refreshUsers();
-
+document.addEventListener('DOMContentLoaded', () => {
+    drawLeaderboard();
+    initControls();
+    if (isTodayPlayed()) showLockedScreen();
+});
+document.addEventListener('touchmove', e => { if (gameState.gameRunning) e.preventDefault(); }, { passive: false });
 </script>
 </body>
 </html>
