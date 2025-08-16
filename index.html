@@ -1,1396 +1,570 @@
 <!DOCTYPE html>
-
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🚗 جامع الحسابات المطور</title>
+    <title>🚗 جامع الحسابات | Telegram WebApp</title>
     <style>
-        * {
+        :root {
+            --main-bg: #1a1a2e;
+            --container-bg: #23235b;
+            --road-bg: #222;
+            --accent: #4ecdc4;
+            --danger: #ff6b6b;
+            --score-bg: rgba(255,255,255,0.08);
+            --telegram-accent: #3390ec;
+            --car-color: #ff3333;
+        }
+        body {
+            background: var(--main-bg);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100dvh;
             margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            user-select: none;
-            -webkit-user-select: none;
-            -moz-user-select: none;
+            overflow: hidden;
+            color: var(--accent);
+            transition: background 0.3s, color 0.3s;
         }
-
-```
-    body {
-        background: linear-gradient(180deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        overflow: hidden;
-        height: 100vh;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        touch-action: none;
-    }
-
-    .game-container {
-        width: 100%;
-        max-width: 400px;
-        height: 700px;
-        background: linear-gradient(180deg, #1e1e3f 0%, #000 100%);
-        position: relative;
-        border: 3px solid #333;
-        border-radius: 20px;
-        overflow: hidden;
-        box-shadow: 0 0 50px rgba(0,150,255,0.3);
-    }
-
-    .road {
-        width: 100%;
-        height: 100%;
-        background: #222;
-        position: relative;
-        background-image: 
-            linear-gradient(90deg, #444 0%, #444 5%, transparent 5%, transparent 95%, #444 95%, #444 100%),
-            repeating-linear-gradient(0deg, 
-                transparent 0px, 
-                transparent 30px, 
-                #ffff00 30px, 
-                #ffff00 35px,
-                transparent 35px,
-                transparent 65px
-            );
-        animation: roadMove 1s linear infinite;
-    }
-
-    @keyframes roadMove {
-        0% { background-position: 0 0, 0 0; }
-        100% { background-position: 0 0, 0 70px; }
-    }
-
-    .speed-lines {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        background: repeating-linear-gradient(
-            45deg,
-            transparent 0px,
-            transparent 2px,
-            rgba(255,255,255,0.1) 2px,
-            rgba(255,255,255,0.1) 4px
-        );
-        animation: speedLines 0.1s linear infinite;
-        opacity: 0;
-        transition: opacity 0.3s;
-    }
-
-    @keyframes speedLines {
-        0% { transform: translateX(-10px) translateY(-10px); }
-        100% { transform: translateX(10px) translateY(10px); }
-    }
-
-    .player-car {
-        width: 50px;
-        height: 80px;
-        position: absolute;
-        bottom: 100px;
-        left: 50%;
-        transform: translateX(-50%);
-        background: linear-gradient(45deg, #ff3333, #ff6666, #ff3333);
-        border-radius: 25px 25px 8px 8px;
-        box-shadow: 0 0 20px rgba(255, 51, 51, 0.6);
-        z-index: 15;
-        cursor: grab;
-        transition: all 0.1s ease;
-        border: 2px solid #fff;
-    }
-
-    .player-car:active {
-        cursor: grabbing;
-        transform: translateX(-50%) scale(1.1);
-        box-shadow: 0 0 30px rgba(255, 51, 51, 0.8);
-    }
-
-    .player-car::before {
-        content: '🏎️';
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        font-size: 35px;
-        filter: drop-shadow(0 0 3px rgba(0,0,0,0.5));
-    }
-
-    .player-car::after {
-        content: '';
-        position: absolute;
-        bottom: -10px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 60px;
-        height: 20px;
-        background: radial-gradient(ellipse, rgba(255,51,51,0.3) 0%, transparent 70%);
-        border-radius: 50%;
-    }
-
-    .obstacle-car, .account-item {
-        width: 45px;
-        height: 70px;
-        position: absolute;
-        z-index: 10;
-        transition: all 0.2s ease;
-    }
-
-    .obstacle-car {
-        background: linear-gradient(45deg, #666, #333, #666);
-        border-radius: 20px 20px 5px 5px;
-        border: 1px solid #444;
-        animation: obstacleFloat 2s ease-in-out infinite;
-    }
-
-    .obstacle-car::before {
-        content: '🚙';
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        font-size: 28px;
-    }
-
-    @keyframes obstacleFloat {
-        0%, 100% { transform: translateY(0px); }
-        50% { transform: translateY(-5px); }
-    }
-
-    .account-item {
-        background: linear-gradient(45deg, #4ecdc4, #44a08d);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        animation: accountGlow 1.5s ease-in-out infinite alternate;
-        font-size: 22px;
-        border: 3px solid rgba(255,255,255,0.3);
-        cursor: pointer;
-    }
-
-    .account-item.rare {
-        background: linear-gradient(45deg, #f093fb, #f5576c, #4facfe);
-        box-shadow: 0 0 25px rgba(240, 147, 251, 0.9);
-        animation: rareGlow 0.8s ease-in-out infinite alternate;
-        border: 3px solid #fff;
-    }
-
-    .account-item.epic {
-        background: linear-gradient(45deg, #ffd89b, #19547b, #ffd89b);
-        box-shadow: 0 0 35px rgba(255, 216, 155, 1);
-        animation: epicGlow 0.6s ease-in-out infinite alternate;
-        border: 3px solid gold;
-    }
-
-    @keyframes accountGlow {
-        0% { 
-            box-shadow: 0 0 15px rgba(78, 205, 196, 0.6);
-            transform: scale(1);
+        .game-container { width: 100vw; max-width: 430px; height: 98dvh; margin: auto; background: var(--container-bg); border-radius: 0 0 20px 20px; box-shadow: 0 6px 32px 0 #000a; border: none; position: relative; overflow: hidden; }
+        .road { width: 100%; height: 100%; background: var(--road-bg); position: absolute; z-index: 1;
+            background-image: linear-gradient(90deg, #444 0%, #444 5%, transparent 5%, transparent 95%, #444 95%, #444 100%),repeating-linear-gradient(0deg, transparent 0px, transparent 30px, #ffff00 30px, #ffff00 35px, transparent 35px, transparent 65px);
+            animation: roadMove 1s linear infinite;
         }
-        100% { 
-            box-shadow: 0 0 25px rgba(78, 205, 196, 0.9);
-            transform: scale(1.05);
+        @keyframes roadMove { 0% { background-position: 0 0, 0 0; } 100% { background-position: 0 0, 0 70px; } }
+        .ui-overlay { position: absolute; top: 0; left: 0; right: 0; z-index: 20; padding: 14px 15px 5px 15px; background: linear-gradient(180deg, rgba(0,0,0,0.7) 0%, transparent 100%); color: #fff; font-size: 1rem;}
+        .ui-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;}
+        .score, .level, .combo { font-weight: bold; background: var(--score-bg); padding: 7px 12px; border-radius: 18px; font-size: 1rem;}
+        .health-bar { display: flex; gap: 4px;}
+        .health-heart { font-size: 20px; transition: all 0.3s;}
+        .health-heart.lost { opacity: 0.3; transform: scale(0.6);}
+        .game-over, .start-screen, .pause-screen, .leaderboard-screen, .customize-screen, .daily-challenge-screen {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, rgba(0,0,0,0.96), rgba(20,20,50,0.96));
+            color: #fff; padding: 32px 15px; border-radius: 18px; text-align: center; z-index: 50;
+            border: 2px solid rgba(255,255,255,0.07); width: 95%; max-width: 340px; box-shadow: 0 2px 20px #0008;
+            display: none;
         }
-    }
-
-    @keyframes rareGlow {
-        0% { 
-            box-shadow: 0 0 20px rgba(240, 147, 251, 0.8);
-            transform: scale(1) rotate(0deg);
+        .start-screen { display: block; }
+        .game-over h2, .start-screen h1, .pause-screen h2, .leaderboard-screen h2, .customize-screen h2, .daily-challenge-screen h2 {
+            color: var(--danger); margin-bottom: 15px; font-size: 1.3rem; text-shadow: 0 0 7px #ffb2b2;
         }
-        100% { 
-            box-shadow: 0 0 40px rgba(245, 87, 108, 1);
-            transform: scale(1.1) rotate(5deg);
-        }
-    }
-
-    @keyframes epicGlow {
-        0% { 
-            box-shadow: 0 0 30px rgba(255, 216, 155, 1);
-            transform: scale(1) rotate(-2deg);
-        }
-        100% { 
-            box-shadow: 0 0 50px gold;
-            transform: scale(1.15) rotate(2deg);
-        }
-    }
-
-    .ui-overlay {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        z-index: 25;
-        padding: 20px;
-        background: linear-gradient(180deg, rgba(0,0,0,0.8) 0%, transparent 100%);
-        color: white;
-    }
-
-    .ui-top {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 10px;
-    }
-
-    .ui-bottom {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        font-size: 14px;
-        opacity: 0.8;
-    }
-
-    .score, .level, .combo {
-        font-size: 18px;
-        font-weight: bold;
-        background: rgba(255,255,255,0.1);
-        padding: 8px 15px;
-        border-radius: 20px;
-        backdrop-filter: blur(5px);
-    }
-
-    .health-bar {
-        display: flex;
-        gap: 5px;
-    }
-
-    .health-heart {
-        font-size: 20px;
-        transition: all 0.3s ease;
-    }
-
-    .health-heart.lost {
-        opacity: 0.3;
-        transform: scale(0.5);
-    }
-
-    .combo-multiplier {
-        position: absolute;
-        top: 120px;
-        left: 50%;
-        transform: translateX(-50%);
-        background: linear-gradient(45deg, #ff6b6b, #feca57);
-        color: white;
-        padding: 10px 20px;
-        border-radius: 25px;
-        font-weight: bold;
-        z-index: 20;
-        display: none;
-        animation: comboPopup 0.5s ease-out;
-    }
-
-    @keyframes comboPopup {
-        0% { transform: translateX(-50%) scale(0); opacity: 0; }
-        100% { transform: translateX(-50%) scale(1); opacity: 1; }
-    }
-
-    .game-over, .start-screen, .pause-screen {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background: linear-gradient(135deg, rgba(0,0,0,0.95), rgba(20,20,50,0.95));
-        color: white;
-        padding: 40px;
-        border-radius: 20px;
-        text-align: center;
-        z-index: 30;
-        backdrop-filter: blur(10px);
-        border: 2px solid rgba(255,255,255,0.1);
-        max-width: 90%;
-    }
-
-    .start-screen {
-        display: block;
-    }
-
-    .game-over, .pause-screen {
-        display: none;
-    }
-
-    .game-over h2, .start-screen h1, .pause-screen h2 {
-        color: #ff6b6b;
-        margin-bottom: 20px;
-        font-size: 28px;
-        text-shadow: 0 0 10px rgba(255, 107, 107, 0.5);
-    }
-
-    .stats {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 15px;
-        margin: 20px 0;
-        font-size: 16px;
-    }
-
-    .stat-item {
-        background: rgba(255,255,255,0.1);
-        padding: 15px;
-        border-radius: 10px;
-        backdrop-filter: blur(5px);
-    }
-
-    .btn {
-        background: linear-gradient(45deg, #4ecdc4, #44a08d);
-        color: white;
-        border: none;
-        padding: 15px 30px;
-        border-radius: 25px;
-        font-size: 18px;
-        font-weight: bold;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        margin: 10px;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-    }
-
-    .btn:hover, .btn:active {
-        transform: scale(1.05);
-        box-shadow: 0 8px 25px rgba(78, 205, 196, 0.4);
-    }
-
-    .btn.secondary {
-        background: linear-gradient(45deg, #666, #888);
-    }
-
-    .btn.danger {
-        background: linear-gradient(45deg, #ff6b6b, #ee5a52);
-    }
-
-    .control-zone {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        height: 120px;
-        background: linear-gradient(0deg, rgba(0,0,0,0.8), transparent);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 20px;
-        z-index: 20;
-    }
-
-    .control-btn {
-        background: rgba(255,255,255,0.15);
-        border: 2px solid rgba(255,255,255,0.3);
-        border-radius: 15px;
-        color: white;
-        font-size: 24px;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        padding: 15px 20px;
-        backdrop-filter: blur(5px);
-    }
-
-    .control-btn:active {
-        background: rgba(255,255,255,0.3);
-        transform: scale(0.95);
-    }
-
-    .pause-btn {
-        position: absolute;
-        top: 20px;
-        right: 20px;
-        z-index: 25;
-        background: rgba(255,255,255,0.2);
-        border: none;
-        border-radius: 50%;
-        width: 50px;
-        height: 50px;
-        color: white;
-        font-size: 18px;
-        cursor: pointer;
-        backdrop-filter: blur(5px);
-    }
-
-    .powerup {
-        position: absolute;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        background: linear-gradient(45deg, #00ff88, #00cc6a);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 20px;
-        z-index: 12;
-        animation: powerupFloat 2s ease-in-out infinite;
-        border: 2px solid #fff;
-        box-shadow: 0 0 20px rgba(0, 255, 136, 0.8);
-    }
-
-    @keyframes powerupFloat {
-        0%, 100% { transform: translateY(0px) rotate(0deg); }
-        50% { transform: translateY(-10px) rotate(180deg); }
-    }
-
-    .particle {
-        position: absolute;
-        width: 4px;
-        height: 4px;
-        background: #fff;
-        border-radius: 50%;
-        pointer-events: none;
-        z-index: 5;
-    }
-
-    @media (max-width: 480px) {
-        .game-container {
-            width: 100%;
-            height: 100vh;
-            border-radius: 0;
-            max-width: none;
-        }
-        
-        .ui-overlay {
-            padding: 15px;
-        }
-        
-        .score, .level, .combo {
-            font-size: 14px;
-            padding: 6px 12px;
-        }
-    }
-
-    .high-score-badge {
-        position: absolute;
-        top: 10px;
-        left: 50%;
-        transform: translateX(-50%);
-        background: linear-gradient(45deg, #ffd700, #ffed4a);
-        color: #333;
-        padding: 5px 15px;
-        border-radius: 15px;
-        font-weight: bold;
-        font-size: 12px;
-        z-index: 26;
-        display: none;
-    }
-
-    .tutorial {
-        position: absolute;
-        bottom: 200px;
-        left: 50%;
-        transform: translateX(-50%);
-        background: rgba(0,0,0,0.8);
-        color: white;
-        padding: 15px 20px;
-        border-radius: 15px;
-        font-size: 14px;
-        z-index: 25;
-        backdrop-filter: blur(5px);
-        border: 1px solid rgba(255,255,255,0.2);
-        text-align: center;
-        animation: tutorialPulse 2s ease-in-out infinite;
-    }
-
-    @keyframes tutorialPulse {
-        0%, 100% { opacity: 0.8; transform: translateX(-50%) scale(1); }
-        50% { opacity: 1; transform: translateX(-50%) scale(1.05); }
-    }
-</style>
-```
-
+        .btn { background: linear-gradient(45deg, var(--accent), var(--telegram-accent)); color: #fff; border: none; padding: 11px 22px; border-radius: 23px; font-size: 1rem; font-weight: bold; cursor: pointer; margin: 8px 0; box-shadow: 0 1px 7px #0003; transition: 0.18s;}
+        .btn.secondary { background: linear-gradient(45deg, #555, #888);}
+        .btn.danger { background: linear-gradient(45deg, var(--danger), #ee5a52);}
+        .btn:active { transform: scale(0.98);}
+        .control-zone { position: absolute; bottom: 0; left: 0; right: 0; height: 70px; background: linear-gradient(0deg, rgba(0,0,0,0.7), transparent); display: flex; justify-content: space-between; align-items: center; padding: 10px 25px; z-index: 20;}
+        .control-btn { background: rgba(255,255,255,0.11); border: 2px solid rgba(255,255,255,0.22); border-radius: 15px; color: #fff; font-size: 22px; cursor: pointer; padding: 12px 16px; }
+        .pause-btn, .close-btn { position: absolute; top: 12px; z-index: 30; background: rgba(255,255,255,0.17); border: none; border-radius: 50%; width: 40px; height: 40px; color: #fff; font-size: 18px; cursor: pointer;}
+        .pause-btn { right: 15px;}
+        .close-btn { left: 15px; background: linear-gradient(135deg, #222, #ff6b6b);}
+        .player-car { width: 48px; height: 76px; position: absolute; bottom: 95px; left: 50%; transform: translateX(-50%); background: linear-gradient(45deg, var(--car-color), #ff6666, var(--car-color)); border-radius: 25px 25px 8px 8px; box-shadow: 0 0 18px #f33a; z-index: 15; cursor: grab; border: 2px solid #fff3;}
+        .player-car:active { cursor: grabbing;}
+        .player-car::before { content: attr(data-emoji); position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 33px; filter: drop-shadow(0 0 3px #0004);}
+        .obstacle-car, .account-item, .powerup { width: 40px; height: 65px; position: absolute; z-index: 10; transition: all 0.18s;}
+        .obstacle-car { background: linear-gradient(45deg, #888, #333, #666); border-radius: 20px 20px 5px 5px; border: 1px solid #444;}
+        .obstacle-car::before { content: '🚙'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 27px;}
+        .account-item, .powerup { display: flex; align-items: center; justify-content: center; font-size: 23px; border-radius: 50%; border: 2px solid #fff1;}
+        .powerup { background: linear-gradient(45deg, #00ff88, #00cc6a); box-shadow: 0 0 13px #0f8a; width: 38px; height: 38px; font-size: 20px;}
+        .high-score-badge { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); background: linear-gradient(45deg, #ffd700, #ffed4a); color: #333; padding: 4px 13px; border-radius: 13px; font-weight: bold; font-size: 13px; z-index: 26; display: none;}
+        .settings-btn { position: absolute; bottom: 90px; left: 10px; border: none; background: var(--score-bg); color: #fff; border-radius: 18px; padding: 8px 14px; z-index: 31; font-size: 20px; cursor: pointer;}
+        .settings-panel { position: absolute; top: 60px; left: 50%; transform: translateX(-50%); background: #191941e8; padding: 18px 26px; border-radius: 16px; z-index: 99; display: none;}
+        .settings-panel label { display: block; margin: 13px 0 5px;}
+        .settings-panel input[type="checkbox"] { margin-left: 7px;}
+        @media (max-width: 600px) { .game-container { max-width: 100vw; border-radius: 0; } .game-over, .start-screen, .pause-screen, .leaderboard-screen, .customize-screen, .daily-challenge-screen { max-width: 99vw; }}
+    </style>
 </head>
 <body>
     <div class="game-container" id="gameContainer">
         <div class="road" id="road"></div>
-        <div class="speed-lines" id="speedLines"></div>
-
-```
-    <div class="ui-overlay">
-        <div class="ui-top">
-            <div class="score">💰 <span id="score">0</span></div>
-            <div class="level">🏆 <span id="level">1</span></div>
-        </div>
-        <div class="ui-bottom">
-            <div class="health-bar" id="healthBar">
-                <span class="health-heart">❤️</span>
-                <span class="health-heart">❤️</span>
-                <span class="health-heart">❤️</span>
+        <div class="ui-overlay">
+            <div class="ui-top">
+                <div class="score">💰 <span id="score">0</span></div>
+                <div class="level">🏆 <span id="level">1</span></div>
             </div>
-            <div class="combo">🔥 x<span id="comboCount">1</span></div>
-        </div>
-    </div>
-
-    <div class="high-score-badge" id="highScoreBadge">
-        🏅 أعلى نقاط: <span id="highScoreValue">0</span>
-    </div>
-
-    <div class="combo-multiplier" id="comboMultiplier">
-        🔥 مضاعف النقاط!
-    </div>
-
-    <button class="pause-btn" id="pauseBtn" onclick="togglePause()">⏸️</button>
-
-    <div class="player-car" id="playerCar"></div>
-
-    <!-- Start Screen -->
-    <div class="start-screen" id="startScreen">
-        <h1>🚗 جامع الحسابات المطور</h1>
-        <div class="stats">
-            <div class="stat-item">
-                <div>🤖 ChatGPT</div>
-                <div>10 نقاط</div>
-            </div>
-            <div class="stat-item">
-                <div>🎨 Canva</div>
-                <div>10 نقاط</div>
-            </div>
-            <div class="stat-item">
-                <div>📺 Crunchyroll</div>
-                <div>30 نقطة</div>
-            </div>
-            <div class="stat-item">
-                <div>🧠 Perplexity</div>
-                <div>50 نقطة</div>
-            </div>
-            <div class="stat-item">
-                <div>📱 Apple TV</div>
-                <div>100 نقطة</div>
-            </div>
-            <div class="stat-item">
-                <div>⚡ باور أب</div>
-                <div>حماية مؤقتة</div>
+            <div class="ui-bottom" style="display: flex; justify-content: space-between; align-items: center; font-size: 13px;">
+                <div class="health-bar" id="healthBar">
+                    <span class="health-heart">❤️</span>
+                    <span class="health-heart">❤️</span>
+                    <span class="health-heart">❤️</span>
+                </div>
+                <div class="combo">🔥 x<span id="comboCount">1</span></div>
             </div>
         </div>
-        <p style="margin: 20px 0; font-size: 16px; opacity: 0.8;">
-            🎮 اسحب السيارة بإصبعك للتحكم<br>
-            🎯 اجمع الحسابات وتجنب السيارات<br>
-            🔥 اجمع نقاط متتالية للحصول على مضاعف!
-        </p>
-        <button class="btn" onclick="startGame()">🚀 ابدأ اللعب</button>
-        <button class="btn secondary" onclick="showInstructions()">📖 التعليمات</button>
-    </div>
-
-    <!-- Game Over Screen -->
-    <div class="game-over" id="gameOver">
-        <h2>💥 انتهت اللعبة!</h2>
-        <div class="stats">
-            <div class="stat-item">
-                <div>النقاط النهائية</div>
-                <div id="finalScore">0</div>
-            </div>
-            <div class="stat-item">
-                <div>أعلى مستوى</div>
-                <div id="finalLevel">1</div>
-            </div>
-            <div class="stat-item">
-                <div>حسابات مجمعة</div>
-                <div id="accountsCollected">0</div>
-            </div>
-            <div class="stat-item">
-                <div>أعلى مضاعف</div>
-                <div id="highestCombo">1</div>
-            </div>
+        <div class="high-score-badge" id="highScoreBadge">
+            🏅 أعلى نقاط: <span id="highScoreValue">0</span>
         </div>
-        <div id="newHighScore" style="display:none; color: #ffd700; font-weight: bold; margin: 10px 0;">
-            🎉 رقم قياسي جديد!
+        <button class="pause-btn" id="pauseBtn" onclick="togglePause()">⏸️</button>
+        <button class="close-btn" id="closeBtn" style="display:none;" title="إغلاق">✖️</button>
+        <button class="settings-btn" id="settingsBtn" title="الإعدادات">⚙️</button>
+        <div class="settings-panel" id="settingsPanel">
+            <label><input type="checkbox" id="soundToggle" checked> تفعيل الصوت</label>
+            <label><input type="checkbox" id="vibrationToggle" checked> تفعيل الاهتزاز</label>
+            <label>🌈 لون السيارة:
+                <select id="carColorSelect">
+                    <option value="#ff3333">أحمر</option>
+                    <option value="#3390ec">أزرق</option>
+                    <option value="#4ecdc4">أخضر</option>
+                    <option value="#ffd700">ذهبي</option>
+                </select>
+            </label>
+            <button class="btn secondary" onclick="document.getElementById('settingsPanel').style.display='none'">إغلاق</button>
         </div>
-        <button class="btn" onclick="restartGame()">🎮 لعب مرة أخرى</button>
-        <button class="btn secondary" onclick="backToMenu()">🏠 القائمة الرئيسية</button>
+        <div class="player-car" id="playerCar" data-emoji="🏎️"></div>
+        <!-- Start Screen -->
+        <div class="start-screen" id="startScreen">
+            <h1>🚗 جامع الحسابات</h1>
+            <div style="margin: 0 0 15px 0; font-size: 14px; color: #d9fff7;">
+                لعبة ترفيهية سريعة داخل تليجرام<br>تحكم بسيارتك واجمع النقاط!
+            </div>
+            <button class="btn" onclick="startGame()">🚀 ابدأ اللعب</button>
+            <button class="btn secondary" onclick="showLeaderboard()">🏆 لوحة الشرف</button>
+            <button class="btn secondary" onclick="showCustomize()">🎨 تخصيص</button>
+            <button class="btn secondary" onclick="showDailyChallenge()">🔥 التحدي اليومي</button>
+        </div>
+        <!-- Game Over Screen -->
+        <div class="game-over" id="gameOver">
+            <h2>💥 انتهت اللعبة!</h2>
+            <div style="margin: 8px 0 14px 0;">
+                <div>النقاط: <span id="finalScore">0</span></div>
+                <div>المستوى: <span id="finalLevel">1</span></div>
+                <div>أعلى مضاعف: <span id="highestCombo">1</span></div>
+            </div>
+            <div id="newHighScore" style="display:none; color: #ffd700; font-weight: bold; margin: 7px 0;">
+                🎉 رقم قياسي جديد!
+            </div>
+            <button class="btn" onclick="restartGame()">🎮 حاول مجدداً</button>
+            <button class="btn secondary" onclick="backToMenu()">🏠 القائمة</button>
+            <button class="btn" id="tgShareBtn" style="display:none;">📤 مشاركة النتيجة</button>
+        </div>
+        <!-- Pause Screen -->
+        <div class="pause-screen" id="pauseScreen">
+            <h2>⏸️ مؤقت</h2>
+            <button class="btn" onclick="togglePause()">▶️ متابعة</button>
+            <button class="btn secondary" onclick="backToMenu()">🏠 القائمة</button>
+        </div>
+        <!-- Leaderboard -->
+        <div class="leaderboard-screen" id="leaderboardScreen">
+            <h2>🏆 لوحة الشرف</h2>
+            <div id="leaderboardList" style="text-align:right;font-size:15px;direction:rtl;min-height:130px"></div>
+            <button class="btn secondary" onclick="hideLeaderboard()">إغلاق</button>
+        </div>
+        <!-- Customize -->
+        <div class="customize-screen" id="customizeScreen">
+            <h2>🎨 التخصيص</h2>
+            <div>
+                <label>رمز السيارة:
+                    <select id="carEmojiSelect">
+                        <option value="🏎️">🏎️</option>
+                        <option value="🚘">🚘</option>
+                        <option value="🚗">🚗</option>
+                        <option value="🚕">🚕</option>
+                        <option value="🚓">🚓</option>
+                    </select>
+                </label>
+            </div>
+            <button class="btn secondary" onclick="hideCustomize()">إغلاق</button>
+        </div>
+        <!-- Daily Challenge -->
+        <div class="daily-challenge-screen" id="dailyChallengeScreen">
+            <h2>🔥 التحدي اليومي</h2>
+            <div id="dailyChallengeBox" style="font-size:15px;direction:rtl;min-height:60px"></div>
+            <button class="btn secondary" onclick="hideDailyChallenge()">إغلاق</button>
+        </div>
+        <!-- Control Zone -->
+        <div class="control-zone">
+            <button class="control-btn" id="leftBtn">⬅️</button>
+            <div style="flex: 1;"></div>
+            <button class="control-btn" id="rightBtn">➡️</button>
+        </div>
     </div>
-
-    <!-- Pause Screen -->
-    <div class="pause-screen" id="pauseScreen">
-        <h2>⏸️ مؤقت</h2>
-        <p style="margin: 20px 0;">اللعبة مؤقتة مؤقتاً</p>
-        <button class="btn" onclick="togglePause()">▶️ متابعة</button>
-        <button class="btn secondary" onclick="backToMenu()">🏠 القائمة الرئيسية</button>
-        <button class="btn danger" onclick="restartGame()">🔄 إعادة بدء</button>
-    </div>
-
-    <!-- Tutorial (shows on first play) -->
-    <div class="tutorial" id="tutorial" style="display: none;">
-        🎮 اسحب السيارة الحمراء بإصبعك للتحكم بها!
-    </div>
-
-    <!-- Control Zone -->
-    <div class="control-zone">
-        <button class="control-btn" id="leftBtn">⬅️</button>
-        <div style="flex: 1;"></div>
-        <button class="control-btn" id="rightBtn">➡️</button>
-    </div>
-</div>
-
 <script>
-    let gameState = {
-        score: 0,
-        level: 1,
-        speed: 3,
-        gameRunning: false,
-        gamePaused: false,
-        playerPosition: 50,
-        health: 3,
-        combo: 1,
-        comboCount: 0,
-        invulnerable: false,
-        objects: [],
-        particles: [],
-        powerups: [],
-        stats: {
-            accountsCollected: 0,
-            highestCombo: 1,
-            gamesPlayed: 0
-        },
-        settings: {
-            soundEnabled: true,
-            vibrationEnabled: true
-        }
-    };
-
-    const accounts = [
-        { emoji: '🤖', name: 'ChatGPT', points: 10, rarity: 'common', chance: 0.3 },
-        { emoji: '🎨', name: 'Canva', points: 10, rarity: 'common', chance: 0.25 },
-        { emoji: '📺', name: 'Crunchyroll', points: 30, rarity: 'uncommon', chance: 0.2 },
-        { emoji: '🧠', name: 'Perplexity', points: 50, rarity: 'rare', chance: 0.15 },
-        { emoji: '📱', name: 'Apple TV', points: 100, rarity: 'epic', chance: 0.1 }
-    ];
-
-    const powerupTypes = [
-        { emoji: '🛡️', type: 'shield', duration: 5000 },
-        { emoji: '⚡', type: 'speed', duration: 3000 },
-        { emoji: '💫', type: 'magnet', duration: 4000 }
-    ];
-
-    // Elements
-    const playerCar = document.getElementById('playerCar');
-    const gameContainer = document.getElementById('gameContainer');
-    const road = document.getElementById('road');
-    const speedLines = document.getElementById('speedLines');
-    const scoreElement = document.getElementById('score');
-    const levelElement = document.getElementById('level');
-    const comboCountElement = document.getElementById('comboCount');
-    const healthBar = document.getElementById('healthBar');
-    const startScreen = document.getElementById('startScreen');
-    const gameOverElement = document.getElementById('gameOver');
-    const pauseScreen = document.getElementById('pauseScreen');
-    const tutorial = document.getElementById('tutorial');
-    const comboMultiplier = document.getElementById('comboMultiplier');
-    const highScoreBadge = document.getElementById('highScoreBadge');
-    
-    // Touch/Mouse variables
-    let isDragging = false;
-    let dragStartX = 0;
-    let dragStartY = 0;
-    let playerStartPos = 0;
-
-    // Load saved data
-    function loadGameData() {
-        const saved = localStorage.getItem('carGameData');
-        if (saved) {
-            const data = JSON.parse(saved);
-            gameState.stats = { ...gameState.stats, ...data.stats };
-            if (data.highScore) {
-                document.getElementById('highScoreValue').textContent = data.highScore;
-                highScoreBadge.style.display = 'block';
-            }
-        }
+// ========== 1. Telegram WebApp API تفاعل أعمق ==========
+let tg = window.Telegram && window.Telegram.WebApp;
+function applyTelegramTheme() {
+    if (tg && tg.themeParams) {
+        const p = tg.themeParams;
+        document.body.style.background = p.bg_color || "#1a1a2e";
+        document.body.style.color = p.text_color || "#4ecdc4";
+        document.documentElement.style.setProperty('--main-bg', p.bg_color || "#1a1a2e");
+        document.documentElement.style.setProperty('--accent', p.button_color || "#4ecdc4");
+        document.documentElement.style.setProperty('--telegram-accent', p.button_color || "#3390ec");
     }
-
-    // Save game data
-    function saveGameData() {
-        const dataToSave = {
-            stats: gameState.stats,
-            highScore: Math.max(gameState.score, parseInt(document.getElementById('highScoreValue').textContent) || 0)
-        };
-        localStorage.setItem('carGameData', JSON.stringify(dataToSave));
-    }
-
-    // Touch Controls for Player Car
-    function initTouchControls() {
-        // Mouse events
-        playerCar.addEventListener('mousedown', startDrag);
-        document.addEventListener('mousemove', drag);
-        document.addEventListener('mouseup', endDrag);
-
-        // Touch events
-        playerCar.addEventListener('touchstart', startDrag, { passive: false });
-        document.addEventListener('touchmove', drag, { passive: false });
-        document.addEventListener('touchend', endDrag, { passive: false });
-
-        // Button controls
-        document.getElementById('leftBtn').addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            movePlayer('left');
-        });
-
-        document.getElementById('rightBtn').addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            movePlayer('right');
-        });
-
-        // Keyboard controls
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') {
-                movePlayer('left');
-            } else if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') {
-                movePlayer('right');
-            } else if (e.key === ' ' || e.key === 'Escape') {
-                e.preventDefault();
-                togglePause();
-            }
-        });
-    }
-
-    function startDrag(e) {
-        if (!gameState.gameRunning || gameState.gamePaused) return;
-        
-        e.preventDefault();
-        isDragging = true;
-        
-        const clientX = e.clientX || (e.touches && e.touches[0].clientX);
-        const clientY = e.clientY || (e.touches && e.touches[0].clientY);
-        
-        dragStartX = clientX;
-        dragStartY = clientY;
-        playerStartPos = gameState.playerPosition;
-        
-        playerCar.style.cursor = 'grabbing';
-        
-        // Haptic feedback
-        if (navigator.vibrate && gameState.settings.vibrationEnabled) {
-            navigator.vibrate(50);
-        }
-    }
-
-    function drag(e) {
-        if (!isDragging || !gameState.gameRunning || gameState.gamePaused) return;
-        
-        e.preventDefault();
-        
-        const clientX = e.clientX || (e.touches && e.touches[0].clientX);
-        const deltaX = clientX - dragStartX;
-        
-        // Convert pixel movement to percentage
-        const containerWidth = gameContainer.offsetWidth;
-        const percentageMove = (deltaX / containerWidth) * 100;
-        
-        let newPosition = playerStartPos + percentageMove;
-        
-        // Keep within bounds (15% to 85%)
-        newPosition = Math.max(15, Math.min(85, newPosition));
-        
-        gameState.playerPosition = newPosition;
-        playerCar.style.left = gameState.playerPosition + '%';
-    }
-
-    function endDrag(e) {
-        if (!isDragging) return;
-        
-        isDragging = false;
-        playerCar.style.cursor = 'grab';
-    }
-
-    function movePlayer(direction) {
-        if (!gameState.gameRunning || gameState.gamePaused) return;
-        
-        const moveAmount = 12;
-        
-        if (direction === 'left' && gameState.playerPosition > 15) {
-            gameState.playerPosition -= moveAmount;
-        } else if (direction === 'right' && gameState.playerPosition < 85) {
-            gameState.playerPosition += moveAmount;
-        }
-        
-        gameState.playerPosition = Math.max(15, Math.min(85, gameState.playerPosition));
-        playerCar.style.left = gameState.playerPosition + '%';
-        
-        // Haptic feedback
-        if (navigator.vibrate && gameState.settings.vibrationEnabled) {
-            navigator.vibrate(30);
-        }
-    }
-
-    function createObject() {
-        const rand = Math.random();
-        const obj = document.createElement('div');
-        
-        // 60% obstacle, 35% account, 5% powerup
-        if (rand < 0.6) {
-            // Create obstacle
-            obj.className = 'obstacle-car';
-            obj.dataset.type = 'obstacle';
-        } else if (rand < 0.95) {
-            // Create account
-            const account = getRandomAccount();
-            obj.className = `account-item `;
-            obj.textContent = account.emoji;
-            obj.dataset.type = 'account';
-            obj.dataset.points = account.points;
-            obj.dataset.name = account.name;
-        } else {
-            // Create powerup
-            const powerup = powerupTypes[Math.floor(Math.random() * powerupTypes.length)];
-            obj.className = 'powerup';
-            obj.textContent = powerup.emoji;
-            obj.dataset.type = 'powerup';
-            obj.dataset.powerupType = powerup.type;
-            obj.dataset.duration = powerup.duration;
-        }
-        
-        // Random horizontal position
-        obj.style.left = Math.random() * 70 + 15 + '%';
-        obj.style.top = '-80px';
-        
-        gameContainer.appendChild(obj);
-        gameState.objects.push(obj);
-    }
-
-    function getRandomAccount() {
-        const totalChance = accounts.reduce((sum, acc) => sum + acc.chance, 0);
-        let rand = Math.random() * totalChance;
-        
-        for (const account of accounts) {
-            rand -= account.chance;
-            if (rand <= 0) return account;
-        }
-        
-        return accounts[0]; // Fallback
-    }
-
-    function updateObjects() {
-        gameState.objects.forEach((obj, index) => {
-            const currentTop = parseFloat(obj.style.top);
-            let moveSpeed = gameState.speed;
-            
-            // Powerups move slower
-            if (obj.dataset.type === 'powerup') {
-                moveSpeed *= 0.7;
-            }
-            
-            const newTop = currentTop + moveSpeed;
-            obj.style.top = newTop + 'px';
-
-            // Check collision
-            if (newTop > 480 && newTop < 600) {
-                const objLeft = parseFloat(obj.style.left);
-                const playerLeft = gameState.playerPosition;
-                
-                if (Math.abs(objLeft - playerLeft) < 18) {
-                    handleCollision(obj, index);
-                }
-            }
-
-            // Remove objects that went off screen
-            if (newTop > 700) {
-                removeObject(obj, index);
-            }
-        });
-    }
-
-    function handleCollision(obj, index) {
-        const type = obj.dataset.type;
-        
-        if (type === 'obstacle') {
-            if (!gameState.invulnerable) {
-                takeDamage();
-                createExplosionEffect(obj);
-            }
-            removeObject(obj, index);
-        } else if (type === 'account') {
-            collectAccount(obj);
-            removeObject(obj, index);
-        } else if (type === 'powerup') {
-            collectPowerup(obj);
-            removeObject(obj, index);
-        }
-    }
-
-    function takeDamage() {
-        gameState.health--;
-        gameState.combo = 1;
-        gameState.comboCount = 0;
-        updateUI();
-        
-        // Visual feedback
-        playerCar.style.animation = 'none';
-        setTimeout(() => {
-            playerCar.style.animation = 'damage 0.5s ease-out';
-        }, 10);
-        
-        // Make player temporarily invulnerable
-        gameState.invulnerable = true;
-        playerCar.style.opacity = '0.5';
-        
-        setTimeout(() => {
-            gameState.invulnerable = false;
-            playerCar.style.opacity = '1';
-        }, 2000);
-        
-        // Haptic feedback
-        if (navigator.vibrate && gameState.settings.vibrationEnabled) {
-            navigator.vibrate([200, 100, 200]);
-        }
-        
-        if (gameState.health <= 0) {
-            gameOver();
-        }
-    }
-
-    function collectAccount(obj) {
-        const points = parseInt(obj.dataset.points);
-        const name = obj.dataset.name;
-        
-        // Apply combo multiplier
-        const earnedPoints = points * gameState.combo;
-        gameState.score += earnedPoints;
-        gameState.stats.accountsCollected++;
-        
-        // Increase combo
-        gameState.comboCount++;
-        if (gameState.comboCount >= 3) {
-            gameState.combo = Math.min(gameState.combo + 1, 10);
-            gameState.comboCount = 0;
-            showComboMultiplier();
-            gameState.stats.highestCombo = Math.max(gameState.stats.highestCombo, gameState.combo);
-        }
-        
-        updateUI();
-        
-        // Create collection effect
-        createCollectionEffect(obj, earnedPoints);
-        createParticleEffect(obj);
-        
-        // Check for level up
-        if (gameState.score >= gameState.level * 150) {
-            levelUp();
-        }
-        
-        // Haptic feedback
-        if (navigator.vibrate && gameState.settings.vibrationEnabled) {
-            navigator.vibrate(100);
-        }
-    }
-
-    function collectPowerup(obj) {
-        const powerupType = obj.dataset.powerupType;
-        const duration = parseInt(obj.dataset.duration);
-        
-        createCollectionEffect(obj, powerupType.toUpperCase());
-        createParticleEffect(obj);
-        
-        // Apply powerup effect
-        switch (powerupType) {
-            case 'shield':
-                gameState.invulnerable = true;
-                playerCar.style.boxShadow = '0 0 30px rgba(0, 255, 136, 0.8)';
-                setTimeout(() => {
-                    gameState.invulnerable = false;
-                    playerCar.style.boxShadow = '0 0 20px rgba(255, 51, 51, 0.6)';
-                }, duration);
-                break;
-            case 'speed':
-                const originalSpeed = gameState.speed;
-                gameState.speed *= 0.7; // Slow down obstacles
-                speedLines.style.opacity = '0.5';
-                setTimeout(() => {
-                    gameState.speed = originalSpeed;
-                    speedLines.style.opacity = '0';
-                }, duration);
-                break;
-            case 'magnet':
-                // Attract nearby accounts
-                gameState.objects.forEach(otherObj => {
-                    if (otherObj.dataset.type === 'account') {
-                        const objLeft = parseFloat(otherObj.style.left);
-                        const playerLeft = gameState.playerPosition;
-                        if (Math.abs(objLeft - playerLeft) < 30) {
-                            otherObj.style.transition = 'left 0.5s ease-in-out';
-                            otherObj.style.left = gameState.playerPosition + '%';
-                        }
-                    }
-                });
-                setTimeout(() => {
-                    gameState.objects.forEach(otherObj => {
-                        otherObj.style.transition = '';
-                    });
-                }, duration);
-                break;
-        }
-        
-        // Haptic feedback
-        if (navigator.vibrate && gameState.settings.vibrationEnabled) {
-            navigator.vibrate([100, 50, 100]);
-        }
-    }
-
-    function createCollectionEffect(obj, text) {
-        const effectEl = document.createElement('div');
-        effectEl.textContent = typeof text === 'string' ? text : '+' + text;
-        effectEl.style.cssText = `
-            position: absolute;
-            top: ;
-            left: ;
-            color:  '#4ecdc4';
-            font-size: 20px;
-            font-weight: bold;
-            z-index: 25;
-            animation: floatUp 1.5s ease-out forwards;
-            pointer-events: none;
-            text-shadow: 0 0 5px currentColor;
-        `;
-        
-        gameContainer.appendChild(effectEl);
-        setTimeout(() => {
-            if (effectEl.parentNode) {
-                effectEl.parentNode.removeChild(effectEl);
-            }
-        }, 1500);
-    }
-
-    function createParticleEffect(obj) {
-        const colors = ['#4ecdc4', '#f093fb', '#ffd700', '#ff6b6b', '#00ff88'];
-        
-        for (let i = 0; i < 8; i++) {
-            const particle = document.createElement('div');
-            particle.className = 'particle';
-            particle.style.cssText = `
-                position: absolute;
-                top: ;
-                left: ;
-                background: ;
-                width: px;
-                height: px;
-                animation: particleBurst 1s ease-out forwards;
-                z-index: 8;
-            `;
-            
-            gameContainer.appendChild(particle);
-            
-            setTimeout(() => {
-                if (particle.parentNode) {
-                    particle.parentNode.removeChild(particle);
-                }
-            }, 1000);
-        }
-    }
-
-    function createExplosionEffect(obj) {
-        const explosion = document.createElement('div');
-        explosion.textContent = '💥';
-        explosion.style.cssText = `
-            position: absolute;
-            top: ;
-            left: ;
-            font-size: 40px;
-            z-index: 25;
-            animation: explosionAnim 0.8s ease-out forwards;
-            pointer-events: none;
-        `;
-        
-        gameContainer.appendChild(explosion);
-        setTimeout(() => {
-            if (explosion.parentNode) {
-                explosion.parentNode.removeChild(explosion);
-            }
-        }, 800);
-    }
-
-    function showComboMultiplier() {
-        comboMultiplier.textContent = `🔥 مضاعف x!`;
-        comboMultiplier.style.display = 'block';
-        setTimeout(() => {
-            comboMultiplier.style.display = 'none';
-        }, 2000);
-    }
-
-    function levelUp() {
-        gameState.level++;
-        gameState.speed += 0.5;
-        
-        // Heal one heart
-        if (gameState.health < 3) {
-            gameState.health++;
-        }
-        
-        updateUI();
-        
-        // Visual feedback
-        const levelUpEl = document.createElement('div');
-        levelUpEl.textContent = '🎉 المستوى ' + gameState.level;
-        levelUpEl.style.cssText = `
-            position: absolute;
-            top: 40%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: #ffd700;
-            font-size: 28px;
-            font-weight: bold;
-            z-index: 25;
-            animation: levelUpAnim 2.5s ease-out forwards;
-            pointer-events: none;
-            text-shadow: 0 0 10px currentColor;
-        `;
-        
-        gameContainer.appendChild(levelUpEl);
-        setTimeout(() => {
-            if (levelUpEl.parentNode) {
-                levelUpEl.parentNode.removeChild(levelUpEl);
-            }
-        }, 2500);
-        
-        // Increase road animation speed
-        road.style.animationDuration = Math.max(0.3, 1 - (gameState.level * 0.1)) + 's';
-        
-        // Show speed lines at higher levels
-        if (gameState.level > 3) {
-            speedLines.style.opacity = Math.min(0.3, (gameState.level - 3) * 0.1);
-        }
-    }
-
-    function updateUI() {
-        scoreElement.textContent = gameState.score;
-        levelElement.textContent = gameState.level;
-        comboCountElement.textContent = gameState.combo;
-        
-        // Update health display
-        const hearts = healthBar.querySelectorAll('.health-heart');
-        hearts.forEach((heart, index) => {
-            if (index < gameState.health) {
-                heart.classList.remove('lost');
-            } else {
-                heart.classList.add('lost');
-            }
-        });
-    }
-
-    function removeObject(obj, index) {
-        if (obj.parentNode) {
-            obj.parentNode.removeChild(obj);
-        }
-        gameState.objects.splice(index, 1);
-    }
-
-    function gameOver() {
-        gameState.gameRunning = false;
-        gameState.stats.gamesPlayed++;
-        
-        // Update final stats
-        document.getElementById('finalScore').textContent = gameState.score;
-        document.getElementById('finalLevel').textContent = gameState.level;
-        document.getElementById('accountsCollected').textContent = gameState.stats.accountsCollected;
-        document.getElementById('highestCombo').textContent = gameState.stats.highestCombo;
-        
-        // Check for high score
-        const currentHighScore = parseInt(document.getElementById('highScoreValue').textContent) || 0;
-        if (gameState.score > currentHighScore) {
-            document.getElementById('highScoreValue').textContent = gameState.score;
-            document.getElementById('newHighScore').style.display = 'block';
-            highScoreBadge.style.display = 'block';
-        }
-        
-        saveGameData();
-        gameOverElement.style.display = 'block';
-        
-        // Player car explosion effect
-        playerCar.style.animation = 'explosion 1s ease-out forwards';
-    }
-
-    function togglePause() {
-        if (!gameState.gameRunning) return;
-        
-        gameState.gamePaused = !gameState.gamePaused;
-        
-        if (gameState.gamePaused) {
-            pauseScreen.style.display = 'block';
-            document.getElementById('pauseBtn').textContent = '▶️';
-        } else {
-            pauseScreen.style.display = 'none';
-            document.getElementById('pauseBtn').textContent = '⏸️';
-            gameLoop();
-        }
-    }
-
-    function startGame() {
-        gameState = {
-            ...gameState,
-            score: 0,
-            level: 1,
-            speed: 3,
-            gameRunning: true,
-            gamePaused: false,
-            playerPosition: 50,
-            health: 3,
-            combo: 1,
-            comboCount: 0,
-            invulnerable: false,
-            objects: [],
-            particles: [],
-            powerups: []
-        };
-        
-        // Reset UI
-        updateUI();
-        startScreen.style.display = 'none';
-        gameOverElement.style.display = 'none';
-        pauseScreen.style.display = 'none';
-        
-        // Reset player car
-        playerCar.style.left = '50%';
-        playerCar.style.animation = '';
-        playerCar.style.opacity = '1';
-        playerCar.style.transform = 'translateX(-50%)';
-        playerCar.style.boxShadow = '0 0 20px rgba(255, 51, 51, 0.6)';
-        
-        // Reset road animation
-        road.style.animationDuration = '1s';
-        speedLines.style.opacity = '0';
-        
-        // Clear objects
-        clearAllObjects();
-        
-        // Show tutorial for first-time players
-        if (gameState.stats.gamesPlayed === 0) {
-            tutorial.style.display = 'block';
-            setTimeout(() => {
-                tutorial.style.display = 'none';
-            }, 5000);
-        }
-        
-        gameLoop();
-    }
-
-    function restartGame() {
-        startGame();
-    }
-
-    function backToMenu() {
-        gameState.gameRunning = false;
-        gameState.gamePaused = false;
-        startScreen.style.display = 'block';
-        gameOverElement.style.display = 'none';
-        pauseScreen.style.display = 'none';
-        clearAllObjects();
-    }
-
-    function clearAllObjects() {
-        gameState.objects.forEach(obj => {
-            if (obj.parentNode) {
-                obj.parentNode.removeChild(obj);
-            }
-        });
-        gameState.objects = [];
-    }
-
-    function showInstructions() {
-        alert(`🎮 تعليمات اللعبة:
-```
-
-🚗 التحكم:
-• اسحب السيارة الحمراء بإصبعك
-• أو استخدم الأزرار ⬅️ ➡️
-• أو استخدم مفاتيح الأسهم/A,D
-
-🎯 الهدف:
-• اجمع الحسابات الملونة للحصول على نقاط
-• تجنب السيارات الرمادية
-• اجمع نقاط متتالية للحصول على مضاعف النقاط
-
-⚡ القوى الخاصة:
-• 🛡️ درع: حماية مؤقتة
-• ⚡ سرعة: إبطاء الأعداء
-• 💫 مغناطيس: جذب الحسابات القريبة
-
-💰 النقاط:
-• ChatGPT/Canva: 10 نقاط
-• Crunchyroll: 30 نقطة
-• Perplexity: 50 نقطة
-• Apple TV: 100 نقطة
-
-❤️ الصحة:
-• لديك 3 قلوب
-• الاصطدام يفقدك قلب واحد
-• كل مستوى جديد يشفي قلب واحد
-
-🏆 نصائح:
-• اجمع الحسابات بتتالي للحصول على مضاعف
-• المستويات العالية تزيد السرعة
-• احفظ القوى الخاصة للمواقف الصعبة`);
+}
+applyTelegramTheme();
+if(tg) {
+    tg.onEvent('themeChanged', applyTelegramTheme);
+    document.getElementById('closeBtn').style.display = 'block';
+    document.getElementById('closeBtn').onclick = () => tg.close();
 }
 
-```
-    function gameLoop() {
-        if (!gameState.gameRunning || gameState.gamePaused) return;
-        
-        // Create new objects
-        const spawnRate = 0.025 + (gameState.level * 0.008);
-        if (Math.random() < spawnRate) {
-            createObject();
-        }
-        
-        updateObjects();
-        
-        requestAnimationFrame(gameLoop);
+// ========== إعدادات اللعبة ==========
+let gameState = {
+    score: 0, level: 1, speed: 3, gameRunning: false, gamePaused: false,
+    playerPosition: 50, health: 3, combo: 1, comboCount: 0,
+    invulnerable: false, objects: [],
+    stats: { highestCombo: 1, gamesPlayed: 0 }
+};
+let gameSettings = {
+    sound: true,
+    vibration: true,
+    carColor: "#ff3333",
+    carEmoji: "🏎️"
+};
+const playerCar = document.getElementById('playerCar');
+const gameContainer = document.getElementById('gameContainer');
+const road = document.getElementById('road');
+const scoreElement = document.getElementById('score');
+const levelElement = document.getElementById('level');
+const comboCountElement = document.getElementById('comboCount');
+const healthBar = document.getElementById('healthBar');
+const startScreen = document.getElementById('startScreen');
+const gameOverElement = document.getElementById('gameOver');
+const pauseScreen = document.getElementById('pauseScreen');
+const highScoreBadge = document.getElementById('highScoreBadge');
+const tgShareBtn = document.getElementById('tgShareBtn');
+const leaderboardScreen = document.getElementById('leaderboardScreen');
+const leaderboardList = document.getElementById('leaderboardList');
+const customizeScreen = document.getElementById('customizeScreen');
+const carEmojiSelect = document.getElementById('carEmojiSelect');
+const settingsBtn = document.getElementById('settingsBtn');
+const settingsPanel = document.getElementById('settingsPanel');
+const soundToggle = document.getElementById('soundToggle');
+const vibrationToggle = document.getElementById('vibrationToggle');
+const carColorSelect = document.getElementById('carColorSelect');
+const dailyChallengeScreen = document.getElementById('dailyChallengeScreen');
+const dailyChallengeBox = document.getElementById('dailyChallengeBox');
+
+let isDragging = false, dragStartX = 0, playerStartPos = 0;
+let vibrationAvailable = 'vibrate' in navigator;
+
+// ========== 3. محتوى ديناميكي (جلب الحسابات من الباك إند) ==========
+let accounts = [
+    { emoji: '🤖', points: 10, chance: 0.23 },
+    { emoji: '🎨', points: 10, chance: 0.14 },
+    { emoji: '📺', points: 30, chance: 0.16 },
+    { emoji: '🧠', points: 50, chance: 0.10 },
+    { emoji: '📱', points: 100, chance: 0.06 },
+    { emoji: '💵', points: 5, chance: 0.25 },
+    { emoji: '💎', points: 150, chance: 0.04 },
+];
+async function loadAccounts() {
+    try {
+        let res = await fetch('https://YOUR_BACKEND_URL/api/accounts');
+        let js = await res.json();
+        if(Array.isArray(js) && js.length) accounts = js;
+    } catch {}
+}
+
+// ========== 1. إرسال النتائج للبوت و مشاركة النتيجة ==========
+function sendScoreToBot() {
+    if (tg) {
+        tg.sendData(JSON.stringify({
+            type: "score",
+            score: gameState.score,
+            level: gameState.level,
+            highestCombo: gameState.stats.highestCombo
+        }));
     }
+}
+// مشاركة النتيجة بزر رسمي
+if (tg) {
+    tgShareBtn.style.display = 'inline-block';
+    tgShareBtn.onclick = function () {
+        if (tg.MainButton) {
+            tg.MainButton.setText('📤 شارك نتيجتي');
+            tg.MainButton.show();
+            tg.MainButton.onClick(() => {
+                let msg = `🚗 جمعت ${gameState.score} نقطة في جامع الحسابات!`;
+                tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(msg)}`);
+            });
+        }
+    };
+} else {
+    tgShareBtn.onclick = function () { alert("غير متاح خارج تليجرام!"); };
+}
 
-    // Add CSS animations
-    const additionalStyles = `
-        @keyframes floatUp {
-            0% { opacity: 1; transform: translateY(0) scale(1); }
-            100% { opacity: 0; transform: translateY(-80px) scale(1.5); }
-        }
-        
-        @keyframes levelUpAnim {
-            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.3) rotate(-10deg); }
-            30% { opacity: 1; transform: translate(-50%, -50%) scale(1.2) rotate(5deg); }
-            70% { opacity: 1; transform: translate(-50%, -50%) scale(1) rotate(-2deg); }
-            100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8) rotate(0deg); }
-        }
-        
-        @keyframes explosion {
-            0% { transform: translateX(-50%) scale(1) rotate(0deg); opacity: 1; }
-            50% { transform: translateX(-50%) scale(1.3) rotate(180deg); opacity: 0.7; }
-            100% { transform: translateX(-50%) scale(1.8) rotate(360deg); opacity: 0; }
-        }
-        
-        @keyframes damage {
-            0% { filter: brightness(1); }
-            25% { filter: brightness(2) hue-rotate(90deg); }
-            50% { filter: brightness(1); }
-            75% { filter: brightness(2) hue-rotate(180deg); }
-            100% { filter: brightness(1); }
-        }
-        
-        @keyframes particleBurst {
-            0% { 
-                transform: translate(0, 0) scale(1);
-                opacity: 1;
-            }
-            100% { 
-                transform: translate(px, px) scale(0);
-                opacity: 0;
-            }
-        }
-        
-        @keyframes explosionAnim {
-            0% { transform: scale(0.5) rotate(0deg); opacity: 1; }
-            50% { transform: scale(1.5) rotate(180deg); opacity: 1; }
-            100% { transform: scale(2) rotate(360deg); opacity: 0; }
-        }
-    `;
+// ========== 2. تخزين النتائج أونلاين/Leaderboard ==========
+function saveScoreBackend() {
+    if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
+        fetch('https://YOUR_BACKEND_URL/api/score', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                user_id: tg.initDataUnsafe.user.id,
+                username: tg.initDataUnsafe.user.username,
+                score: gameState.score,
+                level: gameState.level
+            })
+        });
+    }
+}
+async function showLeaderboard() {
+    leaderboardScreen.style.display = 'block';
+    leaderboardList.innerHTML = "جاري التحميل...";
+    try {
+        let res = await fetch('https://YOUR_BACKEND_URL/api/leaderboard');
+        let data = await res.json();
+        leaderboardList.innerHTML = data.slice(0, 10).map((item, i) =>
+            `<div>#${i + 1} - <b>${item.username || 'مجهول'}</b>: <span style="color:gold">${item.score}</span></div>`
+        ).join('');
+    } catch (e) {
+        leaderboardList.innerHTML = "تعذر جلب الترتيب.";
+    }
+}
+function hideLeaderboard() { leaderboardScreen.style.display = 'none'; }
 
-    const styleSheet = document.createElement('style');
-    styleSheet.textContent = additionalStyles;
-    document.head.appendChild(styleSheet);
+// ========== 3. تخصيص السيارة ==========
+function showCustomize() { customizeScreen.style.display = 'block'; }
+function hideCustomize() { customizeScreen.style.display = 'none'; }
+carEmojiSelect.addEventListener('change', function(){
+    gameSettings.carEmoji = this.value;
+    playerCar.setAttribute('data-emoji', gameSettings.carEmoji);
+    saveSettings();
+});
+carColorSelect.addEventListener('change', function(){
+    gameSettings.carColor = this.value;
+    document.documentElement.style.setProperty('--car-color', this.value);
+    saveSettings();
+});
 
-    // Initialize game
-    document.addEventListener('DOMContentLoaded', () => {
-        loadGameData();
-        initTouchControls();
+// ========== 4. تحدي يومي ==========
+async function showDailyChallenge() {
+    dailyChallengeScreen.style.display = 'block';
+    dailyChallengeBox.innerHTML = "جاري التحميل...";
+    try {
+        let res = await fetch('https://YOUR_BACKEND_URL/api/daily-challenge');
+        let c = await res.json();
+        dailyChallengeBox.innerHTML = `<b>المطلوب:</b> ${c.description}<br>الجائزة: <span style="color:gold">${c.reward}</span>`;
+    } catch (e) {
+        dailyChallengeBox.innerHTML = "لا يوجد تحدي اليوم.";
+    }
+}
+function hideDailyChallenge() { dailyChallengeScreen.style.display = 'none'; }
+
+// ========== إعدادات ==========
+settingsBtn.onclick = function () {
+    settingsPanel.style.display = settingsPanel.style.display === 'block' ? 'none' : 'block';
+};
+soundToggle.onchange = function(){ gameSettings.sound = this.checked; saveSettings(); };
+vibrationToggle.onchange = function(){ gameSettings.vibration = this.checked; saveSettings(); };
+function saveSettings() {
+    localStorage.setItem('tgCarGameSettings', JSON.stringify(gameSettings));
+}
+function loadSettings() {
+    let s = localStorage.getItem('tgCarGameSettings');
+    if (s) {
+        try {
+            let js = JSON.parse(s);
+            Object.assign(gameSettings, js);
+            soundToggle.checked = !!gameSettings.sound;
+            vibrationToggle.checked = !!gameSettings.vibration;
+            carColorSelect.value = gameSettings.carColor;
+            carEmojiSelect.value = gameSettings.carEmoji;
+            playerCar.setAttribute('data-emoji', gameSettings.carEmoji);
+            document.documentElement.style.setProperty('--car-color', gameSettings.carColor);
+        } catch {}
+    }
+}
+loadSettings();
+
+// ========== 5. تحسين واجهة المستخدم ==========
+function vibrate(ms) { if(vibrationAvailable && gameSettings.vibration) navigator.vibrate(ms);}
+function playSound() { if(gameSettings.sound) {/* ضع صوت بسيط هنا */} }
+
+// ========== باقي كود اللعبة ==========
+function createObject() {
+    let rand = Math.random(), obj = document.createElement('div');
+    if (rand < 0.6) { obj.className = 'obstacle-car'; obj.dataset.type = 'obstacle'; }
+    else if (rand < 0.97) {
+        let acc = getRandomAccount();
+        obj.className = 'account-item'; obj.textContent = acc.emoji;
+        obj.dataset.type = 'account'; obj.dataset.points = acc.points;
+    } else {
+        obj.className = 'powerup'; obj.textContent = '🛡️'; obj.dataset.type = 'powerup'; obj.dataset.powerupType = 'shield'; obj.dataset.duration = 3500;
+    }
+    obj.style.left = (Math.random() * 68 + 14) + '%'; obj.style.top = '-75px';
+    gameContainer.appendChild(obj); gameState.objects.push(obj);
+}
+function getRandomAccount() {
+    let total = accounts.reduce((s, a) => s + a.chance, 0), rand = Math.random() * total;
+    for (let a of accounts) { rand -= a.chance; if (rand <= 0) return a;}
+    return accounts[0];
+}
+function updateObjects() {
+    gameState.objects.forEach((obj, i) => {
+        const currentTop = parseFloat(obj.style.top);
+        let moveSpeed = gameState.speed * (obj.dataset.type === 'powerup' ? 0.7 : 1);
+        let newTop = currentTop + moveSpeed;
+        obj.style.top = newTop + 'px';
+        // Collision
+        if (newTop > 420 && newTop < 600) {
+            let objLeft = parseFloat(obj.style.left), playerLeft = gameState.playerPosition;
+            if (Math.abs(objLeft - playerLeft) < 18) handleCollision(obj, i);
+        }
+        if (newTop > 800) removeObject(obj, i);
     });
+}
+function handleCollision(obj, i) {
+    let type = obj.dataset.type;
+    if (type === 'obstacle') { if (!gameState.invulnerable) takeDamage(); removeObject(obj, i);}
+    else if (type === 'account') { collectAccount(obj); removeObject(obj, i);}
+    else if (type === 'powerup') { collectPowerup(obj); removeObject(obj, i);}
+}
+function takeDamage() {
+    gameState.health--; gameState.combo = 1; gameState.comboCount = 0; updateUI();
+    playerCar.style.opacity = '0.45'; gameState.invulnerable = true;
+    vibrate([120,80,120]);
+    setTimeout(() => { playerCar.style.opacity = '1'; gameState.invulnerable = false; }, 1050);
+    if (gameState.health <= 0) gameOver();
+}
+function collectAccount(obj) {
+    let pts = parseInt(obj.dataset.points), earned = pts * gameState.combo;
+    gameState.score += earned; gameState.comboCount++; playSound();
+    if (gameState.comboCount >= 3) {
+        gameState.combo = Math.min(gameState.combo + 1, 8); gameState.comboCount = 0;
+        gameState.stats.highestCombo = Math.max(gameState.stats.highestCombo, gameState.combo);
+        vibrate(100);
+    }
+    updateUI();
+    if (gameState.score >= gameState.level * 130) levelUp();
+}
+function collectPowerup(obj) {
+    let type = obj.dataset.powerupType, duration = parseInt(obj.dataset.duration);
+    if (type === 'shield') {
+        gameState.invulnerable = true;
+        playerCar.style.boxShadow = '0 0 30px #0f8a';
+        setTimeout(() => { gameState.invulnerable = false; playerCar.style.boxShadow = '0 0 18px #f33a'; }, duration);
+    }
+}
+function updateUI() {
+    scoreElement.textContent = gameState.score;
+    levelElement.textContent = gameState.level;
+    comboCountElement.textContent = gameState.combo;
+    let hearts = healthBar.querySelectorAll('.health-heart');
+    hearts.forEach((h, i) => { if (i < gameState.health) h.classList.remove('lost'); else h.classList.add('lost'); });
+}
+function removeObject(obj, index) {
+    if (obj.parentNode) obj.parentNode.removeChild(obj); gameState.objects.splice(index, 1);
+}
+function gameOver() {
+    gameState.gameRunning = false;
+    document.getElementById('finalScore').textContent = gameState.score;
+    document.getElementById('finalLevel').textContent = gameState.level;
+    document.getElementById('highestCombo').textContent = gameState.stats.highestCombo;
+    let currentHighScore = parseInt(document.getElementById('highScoreValue').textContent) || 0;
+    if (gameState.score > currentHighScore) {
+        document.getElementById('highScoreValue').textContent = gameState.score;
+        document.getElementById('newHighScore').style.display = 'block';
+        highScoreBadge.style.display = 'block';
+    } else document.getElementById('newHighScore').style.display = 'none';
+    saveGameData();
+    sendScoreToBot();
+    saveScoreBackend();
+    gameOverElement.style.display = 'block';
+    playerCar.style.opacity = '0.55';
+}
+function togglePause() {
+    if (!gameState.gameRunning) return;
+    gameState.gamePaused = !gameState.gamePaused;
+    pauseScreen.style.display = gameState.gamePaused ? 'block' : 'none';
+    document.getElementById('pauseBtn').textContent = gameState.gamePaused ? '▶️' : '⏸️';
+    if (!gameState.gamePaused) gameLoop();
+}
+function startGame() {
+    gameState = { ...gameState, score: 0, level: 1, speed: 3, gameRunning: true, gamePaused: false, playerPosition: 50, health: 3, combo: 1, comboCount: 0, invulnerable: false, objects: [] };
+    updateUI(); startScreen.style.display = 'none'; gameOverElement.style.display = 'none'; pauseScreen.style.display = 'none';
+    playerCar.style.left = '50%'; playerCar.style.opacity = '1'; playerCar.setAttribute('data-emoji', gameSettings.carEmoji); document.documentElement.style.setProperty('--car-color', gameSettings.carColor);
+    clearAllObjects(); gameLoop();
+}
+function restartGame() { startGame(); }
+function backToMenu() {
+    gameState.gameRunning = false; gameState.gamePaused = false;
+    startScreen.style.display = 'block'; gameOverElement.style.display = 'none'; pauseScreen.style.display = 'none'; clearAllObjects();
+    playerCar.style.opacity = '1';
+}
+function clearAllObjects() {
+    gameState.objects.forEach(obj => { if (obj.parentNode) obj.parentNode.removeChild(obj); }); gameState.objects = [];
+}
+function gameLoop() {
+    if (!gameState.gameRunning || gameState.gamePaused) return;
+    let spawnRate = 0.028 + (gameState.level * 0.011);
+    if (Math.random() < spawnRate) createObject();
+    updateObjects();
+    requestAnimationFrame(gameLoop);
+}
+function levelUp() {
+    gameState.level++; gameState.speed += 0.5;
+    if (gameState.health < 3) gameState.health++;
+    updateUI();
+    road.style.animationDuration = Math.max(0.25, 1 - (gameState.level * 0.09)) + 's';
+}
 
-    // Prevent scrolling on mobile
-    document.addEventListener('touchmove', (e) => {
-        if (gameState.gameRunning) {
-            e.preventDefault();
+// ========== تحكم ==========
+function initControls() {
+    playerCar.addEventListener('mousedown', startDrag);
+    document.addEventListener('mousemove', drag);
+    document.addEventListener('mouseup', endDrag);
+    playerCar.addEventListener('touchstart', startDrag, { passive: false });
+    document.addEventListener('touchmove', drag, { passive: false });
+    document.addEventListener('touchend', endDrag, { passive: false });
+    document.getElementById('leftBtn').addEventListener('touchstart', e => { e.preventDefault(); movePlayer('left'); });
+    document.getElementById('rightBtn').addEventListener('touchstart', e => { e.preventDefault(); movePlayer('right'); });
+    document.addEventListener('keydown', e => {
+        if (e.key === 'ArrowLeft' || e.key.toLowerCase() === 'a') movePlayer('left');
+        else if (e.key === 'ArrowRight' || e.key.toLowerCase() === 'd') movePlayer('right');
+        else if (e.key === ' ' || e.key === 'Escape') { e.preventDefault(); togglePause(); }
+    });
+}
+function startDrag(e) {
+    if (!gameState.gameRunning || gameState.gamePaused) return;
+    isDragging = true;
+    dragStartX = e.clientX || (e.touches && e.touches[0].clientX);
+    playerStartPos = gameState.playerPosition;
+}
+function drag(e) {
+    if (!isDragging || !gameState.gameRunning || gameState.gamePaused) return;
+    let clientX = e.clientX || (e.touches && e.touches[0].clientX);
+    let deltaX = clientX - dragStartX;
+    let containerWidth = gameContainer.offsetWidth;
+    let percentageMove = (deltaX / containerWidth) * 100;
+    let newPosition = playerStartPos + percentageMove;
+    newPosition = Math.max(12, Math.min(88, newPosition));
+    gameState.playerPosition = newPosition;
+    playerCar.style.left = gameState.playerPosition + '%';
+}
+function endDrag() { isDragging = false; }
+function movePlayer(dir) {
+    if (!gameState.gameRunning || gameState.gamePaused) return;
+    let moveAmount = 14;
+    if (dir === 'left' && gameState.playerPosition > 12) gameState.playerPosition -= moveAmount;
+    else if (dir === 'right' && gameState.playerPosition < 88) gameState.playerPosition += moveAmount;
+    gameState.playerPosition = Math.max(12, Math.min(88, gameState.playerPosition));
+    playerCar.style.left = gameState.playerPosition + '%';
+}
+
+// ========== تخزين النقاط محلياً ==========
+function loadGameData() {
+    let saved = localStorage.getItem('tgCarGameData');
+    if (saved) {
+        let data = JSON.parse(saved);
+        if (data.highScore) {
+            document.getElementById('highScoreValue').textContent = data.highScore;
+            highScoreBadge.style.display = 'block';
         }
-    }, { passive: false });
-</script>
-```
+    }
+}
+function saveGameData() {
+    let highScore = Math.max(gameState.score, parseInt(document.getElementById('highScoreValue').textContent) || 0);
+    localStorage.setItem('tgCarGameData', JSON.stringify({ highScore }));
+}
 
+// ========== تهيئة ==========
+document.addEventListener('DOMContentLoaded', () => {
+    loadGameData();
+    loadSettings();
+    loadAccounts();
+    initControls();
+});
+document.addEventListener('touchmove', e => { if (gameState.gameRunning) e.preventDefault(); }, { passive: false });
+</script>
 </body>
 </html>
