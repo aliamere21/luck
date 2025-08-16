@@ -3,71 +3,149 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🚗 جامع العملات | Telegram WebApp</title>
+    <title>🔥 تحدي اليوم - جامع العملات الفاخر</title>
     <style>
         :root {
-            --main-bg: #1a1a2e;
-            --container-bg: #23235b;
-            --road-bg: #222;
-            --accent: #4ecdc4;
-            --danger: #ff6b6b;
+            --main-bg: #141e30;
+            --container-bg: linear-gradient(135deg, #243b55 0%, #141e30 100%);
+            --road-bg: #232323;
+            --accent: #ffd700;
+            --danger: #e63946;
             --score-bg: rgba(255,255,255,0.08);
-            --telegram-accent: #3390ec;
-            --car-color: #ff3333;
+            --car-color: #ffe066;
+            --car-shadow: 0 0 38px 6px #fff7b5;
+            --road-shadow: 0 8px 40px #000b;
+            --coin-glow: 0 0 18px #ffd70099, 0 0 8px #ffe06699;
         }
         body {
             background: var(--main-bg);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            min-height: 100dvh;
+            font-family: 'Cairo', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
             margin: 0;
             overflow: hidden;
             color: var(--accent);
-            transition: background 0.3s, color 0.3s;
+            direction: rtl;
         }
-        .game-container { width: 100vw; max-width: 430px; height: 98dvh; margin: auto; background: var(--container-bg); border-radius: 0 0 20px 20px; box-shadow: 0 6px 32px 0 #000a; border: none; position: relative; overflow: hidden; }
-        .road { width: 100%; height: 100%; background: var(--road-bg); position: absolute; z-index: 1;
-            background-image: linear-gradient(90deg, #444 0%, #444 5%, transparent 5%, transparent 95%, #444 95%, #444 100%),repeating-linear-gradient(0deg, transparent 0px, transparent 30px, #ffff00 30px, #ffff00 35px, transparent 35px, transparent 65px);
-            animation: roadMove 1s linear infinite;
+        .game-container {
+            width: 100vw; max-width: 420px; height: 98vh; margin: auto;
+            background: var(--container-bg); border-radius: 0 0 22px 22px;
+            box-shadow: var(--road-shadow);
+            border: none; position: relative; overflow: hidden;
+            border-top: 7px solid #ffd70040;
+        }
+        .road {
+            width: 100%; height: 100%; background: var(--road-bg);
+            position: absolute; z-index: 1;
+            background-image: linear-gradient(90deg, #444 0%, #444 5%, transparent 5%, transparent 95%, #444 95%, #444 100%),
+                repeating-linear-gradient(0deg, transparent 0px, transparent 30px, #ffd700 30px, #ffe066 35px, transparent 35px, transparent 65px);
+            animation: roadMove 0.65s linear infinite;
+            filter: brightness(1.10) contrast(1.07) saturate(1.1);
         }
         @keyframes roadMove { 0% { background-position: 0 0, 0 0; } 100% { background-position: 0 0, 0 70px; } }
-        .ui-overlay { position: absolute; top: 0; left: 0; right: 0; z-index: 20; padding: 14px 15px 5px 15px; background: linear-gradient(180deg, rgba(0,0,0,0.7) 0%, transparent 100%); color: #fff; font-size: 1rem;}
+        .ui-overlay {
+            position: absolute; top: 0; left: 0; right: 0; z-index: 20;
+            padding: 14px 15px 5px 15px;
+            background: linear-gradient(180deg, rgba(20,30,48,0.90) 0%, transparent 100%);
+            color: #fff; font-size: 1rem;
+        }
         .ui-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;}
-        .score, .level, .combo { font-weight: bold; background: var(--score-bg); padding: 7px 12px; border-radius: 18px; font-size: 1rem;}
+        .score, .level {
+            font-weight: bold; background: var(--score-bg);
+            padding: 7px 14px; border-radius: 22px; font-size: 1.05rem; border-bottom: 2px solid #ffe06680;
+            text-shadow: 0 1px 2px #111a;
+        }
         .health-bar { display: flex; gap: 4px;}
-        .health-heart { font-size: 20px; transition: all 0.3s;}
-        .health-heart.lost { opacity: 0.3; transform: scale(0.6);}
-        .game-over, .start-screen, .pause-screen {
+        .health-heart {
+            font-size: 22px; transition: all 0.2s;
+            filter: drop-shadow(0 0 7px #ffd700bb);
+        }
+        .health-heart.lost { opacity: 0.17; transform: scale(0.6);}
+        .game-over, .start-screen, .pause-screen, .daily-locked {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            background: linear-gradient(135deg, rgba(0,0,0,0.96), rgba(20,20,50,0.96));
-            color: #fff; padding: 32px 15px; border-radius: 18px; text-align: center; z-index: 50;
-            border: 2px solid rgba(255,255,255,0.07); width: 95%; max-width: 340px; box-shadow: 0 2px 20px #0008;
+            background: linear-gradient(135deg, rgba(25,25,60,0.97) 0%, rgba(25,30,30,0.94) 100%);
+            color: #fff; padding: 34px 15px; border-radius: 20px; text-align: center; z-index: 50;
+            border: 2px solid rgba(255,255,255,0.09); width: 95%; max-width: 340px; box-shadow: 0 2px 20px #000b;
             display: none;
         }
         .start-screen { display: block; }
-        .game-over h2, .start-screen h1, .pause-screen h2 {
+        .game-over h2, .start-screen h1, .pause-screen h2, .daily-locked h2 {
             color: var(--danger); margin-bottom: 15px; font-size: 1.3rem; text-shadow: 0 0 7px #ffb2b2;
         }
-        .btn { background: linear-gradient(45deg, var(--accent), var(--telegram-accent)); color: #fff; border: none; padding: 11px 22px; border-radius: 23px; font-size: 1rem; font-weight: bold; cursor: pointer; margin: 8px 0; box-shadow: 0 1px 7px #0003; transition: 0.18s;}
-        .btn.secondary { background: linear-gradient(45deg, #555, #888);}
-        .btn.danger { background: linear-gradient(45deg, var(--danger), #ee5a52);}
+        .btn {
+            background: linear-gradient(45deg, #ffd700, #ffe066);
+            color: #222; border: none; padding: 11px 26px; border-radius: 23px; font-size: 1.07rem; font-weight: bold; cursor: pointer; margin: 8px 0;
+            box-shadow: 0 1px 7px #ffd70033; transition: 0.15s;
+        }
         .btn:active { transform: scale(0.98);}
-        .control-zone { position: absolute; bottom: 0; left: 0; right: 0; height: 70px; background: linear-gradient(0deg, rgba(0,0,0,0.7), transparent); display: flex; justify-content: space-between; align-items: center; padding: 10px 25px; z-index: 20;}
-        .control-btn { background: rgba(255,255,255,0.11); border: 2px solid rgba(255,255,255,0.22); border-radius: 15px; color: #fff; font-size: 22px; cursor: pointer; padding: 12px 16px; }
-        .pause-btn, .close-btn { position: absolute; top: 12px; z-index: 30; background: rgba(255,255,255,0.17); border: none; border-radius: 50%; width: 40px; height: 40px; color: #fff; font-size: 18px; cursor: pointer;}
-        .pause-btn { right: 15px;}
-        .close-btn { left: 15px; background: linear-gradient(135deg, #222, #ff6b6b);}
-        .player-car { width: 48px; height: 76px; position: absolute; bottom: 95px; left: 50%; transform: translateX(-50%); background: linear-gradient(45deg, var(--car-color), #ff6666, var(--car-color)); border-radius: 25px 25px 8px 8px; box-shadow: 0 0 18px #f33a; z-index: 15; cursor: grab; border: 2px solid #fff3;}
+        .control-zone {
+            position: absolute; bottom: 0; left: 0; right: 0; height: 67px;
+            background: linear-gradient(0deg, rgba(40, 40, 60, 0.82) 0%, transparent 90%);
+            display: flex; justify-content: space-between; align-items: center; padding: 10px 25px; z-index: 30;
+        }
+        .control-btn {
+            background: linear-gradient(45deg, #ffd70022, #ffe06644);
+            border: 2px solid #ffd70060; border-radius: 16px; color: #fff; font-size: 28px; cursor: pointer; padding: 14px 18px;
+            box-shadow: 0 1px 6px #ffd70022;
+        }
+        .pause-btn {
+            position: absolute; top: 12px; right: 15px; z-index: 30;
+            background: linear-gradient(135deg, #ffd70022, #ffe06622);
+            border: none; border-radius: 50%; width: 40px; height: 40px; color: #ffe066; font-size: 19px; cursor: pointer;
+            box-shadow: 0 0 9px #ffd70044;
+        }
+        .player-car {
+            width: 54px; height: 82px; position: absolute; bottom: 98px; left: 50%; transform: translateX(-50%);
+            background: linear-gradient(45deg, var(--car-color), #fffbe6 70%, var(--car-color));
+            border-radius: 26px 26px 12px 12px;
+            box-shadow: var(--car-shadow); z-index: 15; cursor: grab; border: 2px solid #fff7b5;
+            transition: box-shadow 0.23s;
+        }
         .player-car:active { cursor: grabbing;}
-        .player-car::before { content: attr(data-emoji); position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 33px; filter: drop-shadow(0 0 3px #0004);}
-        .obstacle-car { width: 40px; height: 65px; position: absolute; z-index: 10; background: linear-gradient(45deg, #888, #333, #666); border-radius: 20px 20px 5px 5px; border: 1px solid #444;}
-        .obstacle-car::before { content: '🚙'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 27px;}
-        .coin-item { width: 44px; height: 44px; position: absolute; z-index: 12; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 2px solid #ffec80; background: #fffbe6;}
-        .coin-pic { width: 36px; height: 36px; border-radius: 50%; }
-        .coin-label { position: absolute; bottom: -18px; left: 50%; transform: translateX(-50%); font-size: 12px; color: #ffec80; background: #222b; border-radius: 8px; padding: 0 6px;}
-        .powerup { width: 38px; height: 38px; position: absolute; z-index: 13; border-radius: 50%; background: linear-gradient(45deg, #00ff88, #00cc6a); display: flex; align-items: center; justify-content: center; font-size: 20px; border: 2px solid #fff1; }
-        .high-score-badge { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); background: linear-gradient(45deg, #ffd700, #ffed4a); color: #333; padding: 4px 13px; border-radius: 13px; font-weight: bold; font-size: 13px; z-index: 26; display: none;}
-        @media (max-width: 600px) { .game-container { max-width: 100vw; border-radius: 0; } .game-over, .start-screen, .pause-screen { max-width: 99vw; }}
+        .player-car::before {
+            content: attr(data-emoji);
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            font-size: 38px; filter: drop-shadow(0 0 6px #ffe06666);
+        }
+        .obstacle-car {
+            width: 44px; height: 71px; position: absolute; z-index: 10;
+            background: linear-gradient(45deg, #444, #b7b7b7 60%, #232323 100%);
+            border-radius: 21px 21px 7px 7px; border: 2px solid #ffd70033;
+            box-shadow: 0 0 7px #ffd70022;
+        }
+        .obstacle-car::before {
+            content: '🚙'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            font-size: 28px; filter: drop-shadow(0 0 2px #ffd70066);
+        }
+        .coin-item {
+            width: 40px; height: 40px; position: absolute; z-index: 12;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 50%; border: 2.5px solid #ffd700; background: #fffbe6;
+            box-shadow: var(--coin-glow);
+            animation: coinSpin 1.3s infinite linear;
+        }
+        @keyframes coinSpin { 0%{transform:scale(1) rotateY(0)} 100%{transform:scale(1.05) rotateY(360deg)} }
+        .coin-pic { width: 32px; height: 32px; border-radius: 50%; }
+        .coin-label {
+            position: absolute; bottom: -18px; left: 50%; transform: translateX(-50%); font-size: 12px;
+            color: #ffd700; background: #232323dd; border-radius: 7px; padding: 0 6px;
+        }
+        .high-score-badge {
+            position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
+            background: linear-gradient(45deg, #ffd700, #ffe066);
+            color: #333; padding: 4px 13px; border-radius: 13px; font-weight: bold; font-size: 14px;
+            z-index: 26; display: none; box-shadow: 0 0 11px #ffd70033;
+        }
+        .leaderboard { margin: 28px auto 6px auto; text-align: center; max-width: 320px;}
+        .leaderboard h3 { color: #ffd700; margin-bottom: 7px; font-size: 1.1rem;}
+        .leaderboard ol { padding: 0 0 0 19px; margin: 0; text-align: start;}
+        .leaderboard li { color:#fffbe7; font-size: 1rem; margin-bottom: 2px; }
+        .today-row { color: #fdc500; font-weight: bold; }
+        @media (max-width: 600px) {
+            .game-container { max-width: 100vw; border-radius: 0; }
+            .game-over, .start-screen, .pause-screen, .daily-locked { max-width: 99vw; }
+        }
     </style>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="game-container" id="gameContainer">
@@ -75,50 +153,50 @@
         <div class="ui-overlay">
             <div class="ui-top">
                 <div class="score">🪙 <span id="score">0</span></div>
-                <div class="level">🏆 <span id="level">1</span></div>
+                <div class="level">🔥 <span id="level">1</span></div>
             </div>
             <div class="ui-bottom" style="display: flex; justify-content: space-between; align-items: center; font-size: 13px;">
                 <div class="health-bar" id="healthBar">
                     <span class="health-heart">❤️</span>
-                    <span class="health-heart">❤️</span>
-                    <span class="health-heart">❤️</span>
                 </div>
-                <div class="combo">🔥 x<span id="comboCount">1</span></div>
             </div>
         </div>
-        <div class="high-score-badge" id="highScoreBadge">
-            🏅 أعلى نقاط: <span id="highScoreValue">0</span>
+        <div class="high-score-badge" id="highScoreBadge" style="display:none;">
+            🏅 رقمك اليومي: <span id="highScoreValue">0</span>
         </div>
         <button class="pause-btn" id="pauseBtn" onclick="togglePause()">⏸️</button>
-        <button class="close-btn" id="closeBtn" style="display:none;" title="إغلاق">✖️</button>
-        <div class="player-car" id="playerCar" data-emoji="🏎️"></div>
+        <div class="player-car" id="playerCar" data-emoji="🚗"></div>
         <!-- Start Screen -->
         <div class="start-screen" id="startScreen">
-            <h1>🚗 جامع العملات</h1>
-            <div style="margin: 0 0 15px 0; font-size: 14px; color: #d9fff7;">
-                لعبة ترفيهية سريعة داخل تليجرام<br>تحكم بسيارتك واجمع العملات الذهبية!
+            <h1>🔥 تحدي اليوم</h1>
+            <div style="margin: 0 0 15px 0; font-size: 16px; color: #ffd700;">
+                لديك محاولة واحدة فقط اليوم!<br>كم عملة ستجمع في أصعب لعبة سيارات؟
             </div>
-            <button class="btn" onclick="startGame()">🚀 ابدأ اللعب</button>
+            <button class="btn" id="startBtn" onclick="startGame()">🚦 ابدأ التحدي</button>
+            <div class="leaderboard" id="leaderboardBox"></div>
+        </div>
+        <!-- Locked Screen -->
+        <div class="daily-locked" id="lockedScreen">
+            <h2>⏳ انتهت محاولتك!</h2>
+            <div style="margin: 12px 0 13px 0;">
+                يمكنك المحاولة مجددًا غدًا.<br>
+                رقمك اليوم: <span id="todayScore">0</span>
+            </div>
+            <div class="leaderboard" id="leaderboardBoxLocked"></div>
         </div>
         <!-- Game Over Screen -->
         <div class="game-over" id="gameOver">
-            <h2>💥 انتهت اللعبة!</h2>
+            <h2>💥 انتهت!</h2>
             <div style="margin: 8px 0 14px 0;">
-                <div>النقاط: <span id="finalScore">0</span></div>
+                <div>النقاط اليوم: <span id="finalScore">0</span></div>
                 <div>المستوى: <span id="finalLevel">1</span></div>
-                <div>أعلى مضاعف: <span id="highestCombo">1</span></div>
             </div>
-            <div id="newHighScore" style="display:none; color: #ffd700; font-weight: bold; margin: 7px 0;">
-                🎉 رقم قياسي جديد!
-            </div>
-            <button class="btn" onclick="restartGame()">🎮 حاول مجدداً</button>
-            <button class="btn secondary" onclick="backToMenu()">🏠 القائمة</button>
+            <button class="btn" onclick="returnToLock()">تم</button>
         </div>
         <!-- Pause Screen -->
         <div class="pause-screen" id="pauseScreen">
             <h2>⏸️ مؤقت</h2>
-            <button class="btn" onclick="togglePause()">▶️ متابعة</button>
-            <button class="btn secondary" onclick="backToMenu()">🏠 القائمة</button>
+            <button class="btn" onclick="togglePause()">▶️ استئناف</button>
         </div>
         <!-- Control Zone -->
         <div class="control-zone">
@@ -128,78 +206,65 @@
         </div>
     </div>
 <script>
-// الأصوات
+// الأصوات (غيّر المسار حسب ملفاتك)
 const sounds = {
     die:      new Audio('assets/die.mp3'),
     coin:     new Audio('assets/coin.mp3'),
-    levelup:  new Audio('assets/levelup.mp3'),
-    hero:     new Audio('assets/hero.mp3'),
     crash:    new Audio('assets/crash.mp3')
 };
-// صورة العملة الذهبية (يمكنك تغيير الرابط حسب ملفك)
+// صورة العملة الذهبية
 const coinImage = "assets/coin.png";
-// أنواع العملات (ذَهَب فقط هنا لكن يمكنك توسيعها)
-const coinTypes = [
-    { name: "ذهب", points: 10, img: coinImage, chance: 1 }
-];
-const powerupTypes = [
-    { emoji: '🛡️', type: 'shield', duration: 3500 },
-    { emoji: '⚡', type: 'speed', duration: 2200 }
-];
+const coinType = { name: "ذهب", points: 10, img: coinImage };
 
 let gameState = {
-    score: 0, level: 1, speed: 3, gameRunning: false, gamePaused: false,
-    playerPosition: 50, health: 3, combo: 1, comboCount: 0,
-    invulnerable: false, objects: [], stats: { highestCombo: 1, gamesPlayed: 0 }
+    score: 0, level: 1, speed: 4.2, gameRunning: false, gamePaused: false,
+    playerPosition: 50, health: 1, objects: []
 };
+
 const playerCar = document.getElementById('playerCar');
 const gameContainer = document.getElementById('gameContainer');
 const road = document.getElementById('road');
 const scoreElement = document.getElementById('score');
 const levelElement = document.getElementById('level');
-const comboCountElement = document.getElementById('comboCount');
 const healthBar = document.getElementById('healthBar');
 const startScreen = document.getElementById('startScreen');
+const lockedScreen = document.getElementById('lockedScreen');
 const gameOverElement = document.getElementById('gameOver');
 const pauseScreen = document.getElementById('pauseScreen');
 const highScoreBadge = document.getElementById('highScoreBadge');
-let isDragging = false, dragStartX = 0, playerStartPos = 0;
+const leaderboardBox = document.getElementById('leaderboardBox');
+const leaderboardBoxLocked = document.getElementById('leaderboardBoxLocked');
+const todayScoreEl = document.getElementById('todayScore');
 
-function getRandomCoin() {
-    let total = coinTypes.reduce((s, a) => s + a.chance, 0), rand = Math.random() * total;
-    for (let a of coinTypes) { rand -= a.chance; if (rand <= 0) return a;}
-    return coinTypes[0];
+let isDragging = false, dragStartX = 0, playerStartPos = 0;
+let todayKey = getTodayKey();
+let speedUpInterval;
+
+function getTodayKey() {
+    let now = new Date();
+    return now.getFullYear() + '-' + (now.getMonth()+1).toString().padStart(2,'0') + '-' + now.getDate().toString().padStart(2,'0');
 }
+
 function createObject() {
     let rand = Math.random(), obj;
-    if (rand < 0.7) {
-        // عملة
-        let coin = getRandomCoin();
+    // عملة: 27%  عقبة: 73%
+    if (rand < 0.27) {
         obj = document.createElement('div');
         obj.className = 'coin-item'; obj.dataset.type = 'coin';
-        obj.dataset.points = coin.points;
-        obj.dataset.name = coin.name;
-        // صورة العملة
+        obj.dataset.points = coinType.points;
+        obj.dataset.name = coinType.name;
         let img = document.createElement('img');
         img.className = "coin-pic";
-        img.src = coin.img;
-        img.alt = coin.name;
+        img.src = coinType.img;
+        img.alt = coinType.name;
         obj.appendChild(img);
-        // اسم العملة
         let label = document.createElement('span');
         label.className = "coin-label";
-        label.textContent = coin.name;
+        label.textContent = coinType.name;
         obj.appendChild(label);
-    } else if (rand < 0.93) {
-        // عقبة
+    } else {
         obj = document.createElement('div');
         obj.className = 'obstacle-car'; obj.dataset.type = 'obstacle';
-    } else {
-        // Powerup
-        obj = document.createElement('div');
-        obj.className = 'powerup';
-        obj.textContent = '🛡️';
-        obj.dataset.type = 'powerup'; obj.dataset.powerupType = 'shield'; obj.dataset.duration = 3500;
     }
     obj.style.left = (Math.random() * 68 + 14) + '%'; obj.style.top = '-75px';
     gameContainer.appendChild(obj); gameState.objects.push(obj);
@@ -207,7 +272,7 @@ function createObject() {
 function updateObjects() {
     gameState.objects.forEach((obj, i) => {
         const currentTop = parseFloat(obj.style.top);
-        let moveSpeed = gameState.speed * (obj.dataset.type === 'powerup' ? 0.7 : 1);
+        let moveSpeed = gameState.speed;
         let newTop = currentTop + moveSpeed;
         obj.style.top = newTop + 'px';
         // Collision
@@ -220,42 +285,27 @@ function updateObjects() {
 }
 function handleCollision(obj, i) {
     let type = obj.dataset.type;
-    if (type === 'obstacle') { if (!gameState.invulnerable) takeDamage(); removeObject(obj, i);}
+    if (type === 'obstacle') { takeDamage(); removeObject(obj, i);}
     else if (type === 'coin') { collectCoin(obj); removeObject(obj, i);}
-    else if (type === 'powerup') { collectPowerup(obj); removeObject(obj, i);}
 }
 function takeDamage() {
-    gameState.health--; gameState.combo = 1; gameState.comboCount = 0; updateUI();
-    playerCar.style.opacity = '0.45'; gameState.invulnerable = true;
+    gameState.health--; updateUI();
+    playerCar.style.opacity = '0.36';
     sounds.crash.play();
-    setTimeout(() => { playerCar.style.opacity = '1'; gameState.invulnerable = false; }, 1050);
+    setTimeout(() => { playerCar.style.opacity = '1'; }, 900);
     if (gameState.health <= 0) gameOver();
 }
 function collectCoin(obj) {
-    let pts = parseInt(obj.dataset.points);
-    gameState.score += (pts * gameState.combo); gameState.comboCount++;
+    let pts = 10; // كل عملة 10 فقط
+    gameState.score += pts;
     sounds.coin.play();
-    if (gameState.comboCount >= 3) {
-        gameState.combo = Math.min(gameState.combo + 1, 8); gameState.comboCount = 0;
-        gameState.stats.highestCombo = Math.max(gameState.stats.highestCombo, gameState.combo);
-        sounds.hero.play();
-    }
     updateUI();
-    if (gameState.score >= gameState.level * 130) levelUp();
-}
-function collectPowerup(obj) {
-    let type = obj.dataset.powerupType, duration = parseInt(obj.dataset.duration);
-    sounds.hero.play();
-    if (type === 'shield') {
-        gameState.invulnerable = true;
-        playerCar.style.boxShadow = '0 0 30px #0f8a';
-        setTimeout(() => { gameState.invulnerable = false; playerCar.style.boxShadow = '0 0 18px #f33a'; }, duration);
-    }
+    // كل 110 نقطة صعود مستوى وزيادة سرعة
+    if (gameState.score >= gameState.level * 110) levelUp();
 }
 function updateUI() {
     scoreElement.textContent = gameState.score;
     levelElement.textContent = gameState.level;
-    comboCountElement.textContent = gameState.combo;
     let hearts = healthBar.querySelectorAll('.health-heart');
     hearts.forEach((h, i) => { if (i < gameState.health) h.classList.remove('lost'); else h.classList.add('lost'); });
 }
@@ -266,17 +316,12 @@ function gameOver() {
     gameState.gameRunning = false;
     document.getElementById('finalScore').textContent = gameState.score;
     document.getElementById('finalLevel').textContent = gameState.level;
-    document.getElementById('highestCombo').textContent = gameState.stats.highestCombo;
-    let currentHighScore = parseInt(document.getElementById('highScoreValue').textContent) || 0;
-    if (gameState.score > currentHighScore) {
-        document.getElementById('highScoreValue').textContent = gameState.score;
-        document.getElementById('newHighScore').style.display = 'block';
-        highScoreBadge.style.display = 'block';
-    } else document.getElementById('newHighScore').style.display = 'none';
-    saveGameData();
+    saveTodayScore(gameState.score);
+    drawLeaderboard();
     sounds.die.play();
     gameOverElement.style.display = 'block';
-    playerCar.style.opacity = '0.55';
+    playerCar.style.opacity = '0.65';
+    clearInterval(speedUpInterval);
 }
 function togglePause() {
     if (!gameState.gameRunning) return;
@@ -286,35 +331,52 @@ function togglePause() {
     if (!gameState.gamePaused) gameLoop();
 }
 function startGame() {
-    gameState = { ...gameState, score: 0, level: 1, speed: 3, gameRunning: true, gamePaused: false, playerPosition: 50, health: 3, combo: 1, comboCount: 0, invulnerable: false, objects: [] };
-    updateUI(); startScreen.style.display = 'none'; gameOverElement.style.display = 'none'; pauseScreen.style.display = 'none';
+    // التحقق من المحاولة اليومية
+    if (isTodayPlayed()) {
+        showLockedScreen();
+        return;
+    }
+    gameState = { ...gameState, score: 0, level: 1, speed: 4.2, gameRunning: true, gamePaused: false, playerPosition: 50, health: 1, objects: [] };
+    updateUI(); startScreen.style.display = 'none'; gameOverElement.style.display = 'none'; pauseScreen.style.display = 'none'; lockedScreen.style.display = 'none';
     playerCar.style.left = '50%'; playerCar.style.opacity = '1';
-    clearAllObjects(); gameLoop();
+    clearAllObjects();
+    // زيادة السرعة كل ثانية تدريجياً
+    if (speedUpInterval) clearInterval(speedUpInterval);
+    speedUpInterval = setInterval(() => {
+        if (gameState.gameRunning && !gameState.gamePaused && gameState.speed < 13) {
+            gameState.speed += 0.09; // كل ثانية تزيد السرعة قليلاً حتى حد أقصى
+        }
+    }, 1000);
+    gameLoop();
 }
-function restartGame() { startGame(); }
-function backToMenu() {
-    gameState.gameRunning = false; gameState.gamePaused = false;
-    startScreen.style.display = 'block'; gameOverElement.style.display = 'none'; pauseScreen.style.display = 'none'; clearAllObjects();
-    playerCar.style.opacity = '1';
+function returnToLock() {
+    showLockedScreen();
+}
+function showLockedScreen() {
+    let todayScore = getTodayScore();
+    todayScoreEl.textContent = todayScore;
+    drawLeaderboard();
+    startScreen.style.display = 'none';
+    gameOverElement.style.display = 'none';
+    pauseScreen.style.display = 'none';
+    lockedScreen.style.display = 'block';
+    clearInterval(speedUpInterval);
 }
 function clearAllObjects() {
     gameState.objects.forEach(obj => { if (obj.parentNode) obj.parentNode.removeChild(obj); }); gameState.objects = [];
 }
 function gameLoop() {
     if (!gameState.gameRunning || gameState.gamePaused) return;
-    let spawnRate = 0.028 + (gameState.level * 0.011);
+    let spawnRate = 0.059 + (gameState.level * 0.03);
     if (Math.random() < spawnRate) createObject();
     updateObjects();
     requestAnimationFrame(gameLoop);
 }
 function levelUp() {
-    gameState.level++; gameState.speed += 0.5;
-    if (gameState.health < 3) gameState.health++;
+    gameState.level++; gameState.speed += 0.6;
     updateUI();
-    road.style.animationDuration = Math.max(0.25, 1 - (gameState.level * 0.09)) + 's';
-    sounds.levelup.play();
+    road.style.animationDuration = Math.max(0.10, 0.65 - (gameState.level * 0.06)) + 's';
 }
-
 // تحكم
 function initControls() {
     playerCar.addEventListener('mousedown', startDrag);
@@ -357,24 +419,50 @@ function movePlayer(dir) {
     gameState.playerPosition = Math.max(12, Math.min(88, gameState.playerPosition));
     playerCar.style.left = gameState.playerPosition + '%';
 }
-// تخزين النقاط محلياً
-function loadGameData() {
-    let saved = localStorage.getItem('coinCollectorData');
-    if (saved) {
-        let data = JSON.parse(saved);
-        if (data.highScore) {
-            document.getElementById('highScoreValue').textContent = data.highScore;
-            highScoreBadge.style.display = 'block';
-        }
+// حفظ واسترجاع النقاط اليومية
+function saveTodayScore(score) {
+    let board = getLeaderboard();
+    board[todayKey] = score;
+    localStorage.setItem("dailyLeaderboard", JSON.stringify(board));
+}
+function getTodayScore() {
+    let board = getLeaderboard();
+    return board[todayKey] || 0;
+}
+function isTodayPlayed() {
+    let board = getLeaderboard();
+    return !!board[todayKey];
+}
+function getLeaderboard() {
+    let data = localStorage.getItem("dailyLeaderboard");
+    return data ? JSON.parse(data) : {};
+}
+function drawLeaderboard() {
+    let board = getLeaderboard();
+    let arr = Object.entries(board)
+        .map(([date, score]) => ({date, score: parseInt(score)}))
+        .sort((a, b) => b.date.localeCompare(a.date));
+    let html = "<h3>لوحة صدارة الأيام السابقة</h3><ol>";
+    arr.forEach(row => {
+        let isToday = row.date === todayKey;
+        html += `<li class="${isToday ? 'today-row' : ''}">${row.date}: <b>${row.score}</b></li>`;
+    });
+    html += "</ol>";
+    leaderboardBox.innerHTML = html;
+    leaderboardBoxLocked.innerHTML = html;
+    // تحديث الشريط العلوي
+    let today = arr.find(x=>x.date === todayKey);
+    if (today) {
+        highScoreBadge.style.display = 'block';
+        document.getElementById('highScoreValue').textContent = today.score;
     }
 }
-function saveGameData() {
-    let highScore = Math.max(gameState.score, parseInt(document.getElementById('highScoreValue').textContent) || 0);
-    localStorage.setItem('coinCollectorData', JSON.stringify({ highScore }));
-}
+
 document.addEventListener('DOMContentLoaded', () => {
-    loadGameData();
+    drawLeaderboard();
     initControls();
+    // إذا اللاعب لعب اليوم، فعّل شاشة القفل
+    if (isTodayPlayed()) showLockedScreen();
 });
 document.addEventListener('touchmove', e => { if (gameState.gameRunning) e.preventDefault(); }, { passive: false });
 </script>
