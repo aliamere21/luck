@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🚗 جامع الحسابات | Telegram WebApp</title>
+    <title>🚗 جامع العملات | Telegram WebApp</title>
     <style>
         :root {
             --main-bg: #1a1a2e;
@@ -36,7 +36,7 @@
         .health-bar { display: flex; gap: 4px;}
         .health-heart { font-size: 20px; transition: all 0.3s;}
         .health-heart.lost { opacity: 0.3; transform: scale(0.6);}
-        .game-over, .start-screen, .pause-screen, .leaderboard-screen, .customize-screen, .daily-challenge-screen {
+        .game-over, .start-screen, .pause-screen {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
             background: linear-gradient(135deg, rgba(0,0,0,0.96), rgba(20,20,50,0.96));
             color: #fff; padding: 32px 15px; border-radius: 18px; text-align: center; z-index: 50;
@@ -44,7 +44,7 @@
             display: none;
         }
         .start-screen { display: block; }
-        .game-over h2, .start-screen h1, .pause-screen h2, .leaderboard-screen h2, .customize-screen h2, .daily-challenge-screen h2 {
+        .game-over h2, .start-screen h1, .pause-screen h2 {
             color: var(--danger); margin-bottom: 15px; font-size: 1.3rem; text-shadow: 0 0 7px #ffb2b2;
         }
         .btn { background: linear-gradient(45deg, var(--accent), var(--telegram-accent)); color: #fff; border: none; padding: 11px 22px; border-radius: 23px; font-size: 1rem; font-weight: bold; cursor: pointer; margin: 8px 0; box-shadow: 0 1px 7px #0003; transition: 0.18s;}
@@ -61,12 +61,12 @@
         .player-car::before { content: attr(data-emoji); position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 33px; filter: drop-shadow(0 0 3px #0004);}
         .obstacle-car { width: 40px; height: 65px; position: absolute; z-index: 10; background: linear-gradient(45deg, #888, #333, #666); border-radius: 20px 20px 5px 5px; border: 1px solid #444;}
         .obstacle-car::before { content: '🚙'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 27px;}
-        .account-item { width: 44px; height: 44px; position: absolute; z-index: 12; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 2px solid #fff2; background: #fff;}
-        .account-pic { width: 36px; height: 36px; border-radius: 50%; background: #fafafc; box-shadow: 0 2px 8px #0002;}
-        .account-label { position: absolute; bottom: -18px; left: 50%; transform: translateX(-50%); font-size: 12px; color: #eee; background: #222b; border-radius: 8px; padding: 0 6px;}
+        .coin-item { width: 44px; height: 44px; position: absolute; z-index: 12; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 2px solid #ffec80; background: #fffbe6;}
+        .coin-pic { width: 36px; height: 36px; border-radius: 50%; }
+        .coin-label { position: absolute; bottom: -18px; left: 50%; transform: translateX(-50%); font-size: 12px; color: #ffec80; background: #222b; border-radius: 8px; padding: 0 6px;}
         .powerup { width: 38px; height: 38px; position: absolute; z-index: 13; border-radius: 50%; background: linear-gradient(45deg, #00ff88, #00cc6a); display: flex; align-items: center; justify-content: center; font-size: 20px; border: 2px solid #fff1; }
         .high-score-badge { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); background: linear-gradient(45deg, #ffd700, #ffed4a); color: #333; padding: 4px 13px; border-radius: 13px; font-weight: bold; font-size: 13px; z-index: 26; display: none;}
-        @media (max-width: 600px) { .game-container { max-width: 100vw; border-radius: 0; } .game-over, .start-screen, .pause-screen, .leaderboard-screen, .customize-screen, .daily-challenge-screen { max-width: 99vw; }}
+        @media (max-width: 600px) { .game-container { max-width: 100vw; border-radius: 0; } .game-over, .start-screen, .pause-screen { max-width: 99vw; }}
     </style>
 </head>
 <body>
@@ -74,7 +74,7 @@
         <div class="road" id="road"></div>
         <div class="ui-overlay">
             <div class="ui-top">
-                <div class="score">💰 <span id="score">0</span></div>
+                <div class="score">🪙 <span id="score">0</span></div>
                 <div class="level">🏆 <span id="level">1</span></div>
             </div>
             <div class="ui-bottom" style="display: flex; justify-content: space-between; align-items: center; font-size: 13px;">
@@ -94,9 +94,9 @@
         <div class="player-car" id="playerCar" data-emoji="🏎️"></div>
         <!-- Start Screen -->
         <div class="start-screen" id="startScreen">
-            <h1>🚗 جامع الحسابات</h1>
+            <h1>🚗 جامع العملات</h1>
             <div style="margin: 0 0 15px 0; font-size: 14px; color: #d9fff7;">
-                لعبة ترفيهية سريعة داخل تليجرام<br>تحكم بسيارتك واجمع النقاط!
+                لعبة ترفيهية سريعة داخل تليجرام<br>تحكم بسيارتك واجمع العملات الذهبية!
             </div>
             <button class="btn" onclick="startGame()">🚀 ابدأ اللعب</button>
         </div>
@@ -128,26 +128,29 @@
         </div>
     </div>
 <script>
-// صور الحسابات - يمكنك تغيير الروابط لاحقاً حسب صورك
-const accountImages = {
-    "CG-AI":      "https://cdn.jsdelivr.net/gh/aliamere21/assets/cgai.png",
-    "canva":      "https://cdn.jsdelivr.net/gh/aliamere21/assets/canva.png",
-    "crunchyroll":"https://cdn.jsdelivr.net/gh/aliamere21/assets/crunchyroll.png",
-    "perplexity ai": "https://cdn.jsdelivr.net/gh/aliamere21/assets/perplexity.png",
-    "apple tv":   "https://cdn.jsdelivr.net/gh/aliamere21/assets/appletv.png"
+// الأصوات
+const sounds = {
+    die:      new Audio('assets/die.mp3'),
+    coin:     new Audio('assets/coin.mp3'),
+    levelup:  new Audio('assets/levelup.mp3'),
+    hero:     new Audio('assets/hero.mp3')
 };
-// بيانات الحسابات (اسم وصورة ونقاط وفرصة الظهور)
-const accounts = [
-    { name: "CG-AI",          points: 10,  chance: 0.23, img: accountImages["CG-AI"] },
-    { name: "canva",          points: 10,  chance: 0.18, img: accountImages["canva"] },
-    { name: "crunchyroll",    points: 30,  chance: 0.16, img: accountImages["crunchyroll"] },
-    { name: "perplexity ai",  points: 50,  chance: 0.13, img: accountImages["perplexity ai"] },
-    { name: "apple tv",       points: 100, chance: 0.09, img: accountImages["apple tv"] }
+// صور العملات (يمكنك تغييرها)
+const coinImages = [
+    "https://cdn.jsdelivr.net/gh/aliamere21/assets/coin_gold.png", // عملة ذهبية
+    "https://cdn.jsdelivr.net/gh/aliamere21/assets/coin_silver.png", // عملة فضية
+    "https://cdn.jsdelivr.net/gh/aliamere21/assets/coin_bronze.png" // عملة برونزية
+];
+const coinTypes = [
+    { name: "ذهب",    points: 10, img: coinImages[0], chance: 0.7 },
+    { name: "فضة",    points: 5,  img: coinImages[1], chance: 0.23 },
+    { name: "برونز",  points: 3,  img: coinImages[2], chance: 0.07 }
 ];
 const powerupTypes = [
     { emoji: '🛡️', type: 'shield', duration: 3500 },
     { emoji: '⚡', type: 'speed', duration: 2200 }
 ];
+
 let gameState = {
     score: 0, level: 1, speed: 3, gameRunning: false, gamePaused: false,
     playerPosition: 50, health: 3, combo: 1, comboCount: 0,
@@ -166,33 +169,35 @@ const pauseScreen = document.getElementById('pauseScreen');
 const highScoreBadge = document.getElementById('highScoreBadge');
 let isDragging = false, dragStartX = 0, playerStartPos = 0;
 
-function getRandomAccount() {
-    let total = accounts.reduce((s, a) => s + a.chance, 0), rand = Math.random() * total;
-    for (let a of accounts) { rand -= a.chance; if (rand <= 0) return a;}
-    return accounts[0];
+function getRandomCoin() {
+    let total = coinTypes.reduce((s, a) => s + a.chance, 0), rand = Math.random() * total;
+    for (let a of coinTypes) { rand -= a.chance; if (rand <= 0) return a;}
+    return coinTypes[0];
 }
 function createObject() {
     let rand = Math.random(), obj;
-    if (rand < 0.6) {
+    if (rand < 0.7) {
+        // عملة
+        let coin = getRandomCoin();
+        obj = document.createElement('div');
+        obj.className = 'coin-item'; obj.dataset.type = 'coin';
+        obj.dataset.points = coin.points;
+        obj.dataset.name = coin.name;
+        // صورة العملة
+        let img = document.createElement('img');
+        img.className = "coin-pic";
+        img.src = coin.img;
+        img.alt = coin.name;
+        obj.appendChild(img);
+        // اسم العملة
+        let label = document.createElement('span');
+        label.className = "coin-label";
+        label.textContent = coin.name;
+        obj.appendChild(label);
+    } else if (rand < 0.93) {
+        // عقبة
         obj = document.createElement('div');
         obj.className = 'obstacle-car'; obj.dataset.type = 'obstacle';
-    } else if (rand < 0.97) {
-        let acc = getRandomAccount();
-        obj = document.createElement('div');
-        obj.className = 'account-item'; obj.dataset.type = 'account';
-        obj.dataset.points = acc.points;
-        obj.dataset.name = acc.name;
-        // صورة الحساب
-        let img = document.createElement('img');
-        img.className = "account-pic";
-        img.src = acc.img;
-        img.alt = acc.name;
-        obj.appendChild(img);
-        // اسم الحساب
-        let label = document.createElement('span');
-        label.className = "account-label";
-        label.textContent = acc.name;
-        obj.appendChild(label);
     } else {
         // Powerup
         obj = document.createElement('div');
@@ -220,27 +225,31 @@ function updateObjects() {
 function handleCollision(obj, i) {
     let type = obj.dataset.type;
     if (type === 'obstacle') { if (!gameState.invulnerable) takeDamage(); removeObject(obj, i);}
-    else if (type === 'account') { collectAccount(obj); removeObject(obj, i);}
+    else if (type === 'coin') { collectCoin(obj); removeObject(obj, i);}
     else if (type === 'powerup') { collectPowerup(obj); removeObject(obj, i);}
 }
 function takeDamage() {
     gameState.health--; gameState.combo = 1; gameState.comboCount = 0; updateUI();
     playerCar.style.opacity = '0.45'; gameState.invulnerable = true;
+    sounds.die.play();
     setTimeout(() => { playerCar.style.opacity = '1'; gameState.invulnerable = false; }, 1050);
     if (gameState.health <= 0) gameOver();
 }
-function collectAccount(obj) {
+function collectCoin(obj) {
     let pts = parseInt(obj.dataset.points);
     gameState.score += (pts * gameState.combo); gameState.comboCount++;
+    sounds.coin.play();
     if (gameState.comboCount >= 3) {
         gameState.combo = Math.min(gameState.combo + 1, 8); gameState.comboCount = 0;
         gameState.stats.highestCombo = Math.max(gameState.stats.highestCombo, gameState.combo);
+        sounds.hero.play();
     }
     updateUI();
     if (gameState.score >= gameState.level * 130) levelUp();
 }
 function collectPowerup(obj) {
     let type = obj.dataset.powerupType, duration = parseInt(obj.dataset.duration);
+    sounds.hero.play();
     if (type === 'shield') {
         gameState.invulnerable = true;
         playerCar.style.boxShadow = '0 0 30px #0f8a';
@@ -269,6 +278,7 @@ function gameOver() {
         highScoreBadge.style.display = 'block';
     } else document.getElementById('newHighScore').style.display = 'none';
     saveGameData();
+    sounds.die.play();
     gameOverElement.style.display = 'block';
     playerCar.style.opacity = '0.55';
 }
@@ -306,6 +316,7 @@ function levelUp() {
     if (gameState.health < 3) gameState.health++;
     updateUI();
     road.style.animationDuration = Math.max(0.25, 1 - (gameState.level * 0.09)) + 's';
+    sounds.levelup.play();
 }
 
 // تحكم
@@ -352,7 +363,7 @@ function movePlayer(dir) {
 }
 // تخزين النقاط محلياً
 function loadGameData() {
-    let saved = localStorage.getItem('tgCarGameData');
+    let saved = localStorage.getItem('coinCollectorData');
     if (saved) {
         let data = JSON.parse(saved);
         if (data.highScore) {
@@ -363,7 +374,7 @@ function loadGameData() {
 }
 function saveGameData() {
     let highScore = Math.max(gameState.score, parseInt(document.getElementById('highScoreValue').textContent) || 0);
-    localStorage.setItem('tgCarGameData', JSON.stringify({ highScore }));
+    localStorage.setItem('coinCollectorData', JSON.stringify({ highScore }));
 }
 document.addEventListener('DOMContentLoaded', () => {
     loadGameData();
