@@ -1,0 +1,55 @@
+8) rotate(0deg); }
+        }
+        
+        @keyframes explosion {
+            0% { transform: translateX(-50%) scale(1) rotate(0deg); opacity: 1; }
+            50% { transform: translateX(-50%) scale(1.3) rotate(180deg); opacity: 0.7; }
+            100% { transform: translateX(-50%) scale(1.8) rotate(360deg); opacity: 0; }
+        }
+        
+        @keyframes damage {
+            0% { filter: brightness(1); }
+            25% { filter: brightness(2) hue-rotate(90deg); }
+            50% { filter: brightness(1); }
+            75% { filter: brightness(2) hue-rotate(180deg); }
+            100% { filter: brightness(1); }
+        }
+        
+        @keyframes particleBurst {
+            0% { 
+                transform: translate(0, 0) scale(1);
+                opacity: 1;
+            }
+            100% { 
+                transform: translate(${Math.random() * 100 - 50}px, ${Math.random() * 100 - 50}px) scale(0);
+                opacity: 0;
+            }
+        }
+        
+        @keyframes explosionAnim {
+            0% { transform: scale(0.5) rotate(0deg); opacity: 1; }
+            50% { transform: scale(1.5) rotate(180deg); opacity: 1; }
+            100% { transform: scale(2) rotate(360deg); opacity: 0; }
+        }
+    `;
+
+    const styleSheet = document.createElement('style');
+    styleSheet.textContent = additionalStyles;
+    document.head.appendChild(styleSheet);
+
+    // Initialize game
+    document.addEventListener('DOMContentLoaded', () => {
+        loadGameData();
+        initTouchControls();
+    });
+
+    // Prevent scrolling on mobile
+    document.addEventListener('touchmove', (e) => {
+        if (gameState.gameRunning) {
+            e.preventDefault();
+        }
+    }, { passive: false });
+</script>
+
+</body>
+</html>
