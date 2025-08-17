@@ -1,587 +1,69 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🚗✨ جامع العملات الأسطوري - نسخة السيارات المطورة</title>
-    <style>
-        :root {
-            --main-bg: linear-gradient(135deg, #1c1c31 0%, #243b55 100%);
-            --container-bg: linear-gradient(135deg, #232526 0%, #2c3e50 100%);
-            --road-bg: repeating-linear-gradient(90deg, #222 0, #222 7%, #333 7%, #333 14%);
-            --accent: #00ffd0;
-            --danger: #ff2255;
-            --score-bg: rgba(255,255,255,0.08);
-            --car-shadow: 0 0 38px 8px #fff7b5;
-            --car1: linear-gradient(135deg, #fffa65 60%, #00ffd0 100%);
-            --car2: linear-gradient(135deg, #6af9ff 60%, #2e69e9 100%);
-            --car3: linear-gradient(135deg, #ff6ab9 60%, #e92e8b 100%);
-            --car4: linear-gradient(135deg, #baff6a 60%, #5ee92e 100%);
-            --car5: linear-gradient(135deg, #ffa66a 60%, #e98b2e 100%);
-            --coin-glow: 0 0 18px #ffe066, 0 0 8px #00ffd0;
-            --road-shadow: 0 12px 60px #000b;
-            --star: #ffe066;
-        }
-        body {
-            background: var(--main-bg);
-            font-family: 'Cairo', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            min-height: 100vh;
-            margin: 0;
-            overflow: hidden;
-            color: var(--accent);
-            position: relative;
-        }
-        .stars {
-            position: fixed;
-            width: 100vw; height: 100vh;
-            left: 0; top: 0; pointer-events:none; z-index:0;
-        }
-        .star {
-            position: absolute;
-            width: 2px; height:2px;
-            background: var(--star);
-            border-radius: 50%;
-            opacity: 0.75;
-            animation: twinkle 2.2s infinite alternate;
-        }
-        @keyframes twinkle {
-            0% { opacity: 0.35;}
-            100% { opacity: 0.95;}
-        }
-        .game-container {
-            width: 100vw; max-width: 430px; height: 98vh; margin: auto;
-            background: var(--container-bg); border-radius: 0 0 30px 30px;
-            box-shadow: var(--road-shadow);
-            border: none; position: relative; overflow: hidden;
-            border-top: 8px solid #00ffd066;
-            z-index: 2;
-        }
-        .road {
-            width: 100%; height: 100%; background: var(--road-bg);
-            position: absolute; z-index: 1;
-            background-size: 100% 100%, 100% 120px;
-            background-repeat: repeat, repeat-y;
-            background-image:
-                repeating-linear-gradient(90deg, #222 0, #222 7%, #333 7%, #333 14%),
-                repeating-linear-gradient(0deg, transparent 0px, transparent 40px, #00ffd0 40px, #00ffd0 48px, transparent 48px, transparent 80px);
-            opacity:0.90;
-            box-shadow: 0 8px 60px #00ffd033;
-            animation: roadMove 0.6s linear infinite;
-        }
-        @keyframes roadMove {
-            0% { background-position: 0 0, 0 0;}
-            100% { background-position: 0 0, 0 80px;}
-        }
-        .ui-overlay {
-            position: absolute; top: 0; left: 0; right: 0; z-index: 20;
-            padding: 16px 20px 7px 20px;
-            background: linear-gradient(180deg, #222c 0%, transparent 100%);
-            color: #fff; font-size: 1rem;
-        }
-        .ui-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 7px;}
-        .score, .level {
-            font-weight: bold; background: var(--score-bg);
-            padding: 8px 16px; border-radius: 28px; font-size: 1.1rem;
-            border-bottom: 2px solid #00ffd080;
-            text-shadow: 0 1px 2px #0ffb;
-            box-shadow: 0 0 8px #00ffd022;
-        }
-        .health-bar { display: flex; gap: 6px;}
-        .health-heart {
-            font-size: 23px; filter: drop-shadow(0 0 10px #ffe066bb);
-            transition: all 0.2s;
-        }
-        .health-heart.lost { opacity: 0.13; transform: scale(0.5);}
-        .game-over, .start-screen, .pause-screen, .daily-locked {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            background: linear-gradient(135deg, rgba(30,18,60,0.94) 0%, rgba(16,24,40,0.94) 100%);
-            color: #fff; padding: 36px 18px; border-radius: 27px; text-align: center; z-index: 50;
-            border: 2px solid #00ffd033; width: 95%; max-width: 350px; box-shadow: 0 2px 30px #00ffd044;
-            display: none;
-        }
-        .start-screen { display: block; }
-        .game-over h2, .start-screen h1, .pause-screen h2, .daily-locked h2 {
-            color: var(--accent); margin-bottom: 15px; font-size: 1.45rem; text-shadow: 0 0 12px #00ffd099;
-            letter-spacing: 2px;
-        }
-        .btn {
-            background: linear-gradient(90deg, #00ffd0 0%, #ffe066 100%);
-            color: #002b36; border: none; padding: 13px 27px; border-radius: 27px; font-size: 1.15rem; font-weight: bold; cursor: pointer; margin: 12px 0;
-            box-shadow: 0 2px 13px #00ffd044; transition: 0.13s; border-bottom: 3px solid #ffe066cc;
-        }
-        .btn:active { transform: scale(0.97);}
-        .control-zone {
-            position: absolute; bottom: 0; left: 0; right: 0; height: 75px;
-            background: linear-gradient(0deg, #222e 0%, transparent 90%);
-            display: flex; justify-content: space-between; align-items: center; padding: 10px 25px; z-index: 30;
-        }
-        .control-btn {
-            background: linear-gradient(45deg, #00ffd022, #ffe06644);
-            border: 2px solid #00ffd060; border-radius: 17px; color: #fff; font-size: 31px; cursor: pointer; padding: 15px 20px;
-            box-shadow: 0 1px 8px #00ffd022;
-        }
-        .pause-btn {
-            position: absolute; top: 12px; right: 16px; z-index: 30;
-            background: linear-gradient(135deg, #00ffd022, #ffe06622);
-            border: none; border-radius: 50%; width: 43px; height: 43px; color: #ffe066; font-size: 21px; cursor: pointer;
-            box-shadow: 0 0 13px #00ffd044;
-        }
-        .player-car {
-            width: 62px; height: 92px; position: absolute; bottom: 105px; left: 50%; transform: translateX(-50%);
-            border-radius: 30px 30px 17px 17px;
-            box-shadow: var(--car-shadow);
-            z-index: 15; cursor: grab; border: 2.5px solid #fff7b5;
-            transition: box-shadow 0.23s, background 0.18s;
-            border-bottom: 8px solid #00ffd099;
-            background: var(--car1);
-            display: flex; align-items: center; justify-content: center;
-        }
-        .player-car.shake {
-            animation: carShake 0.26s linear;
-        }
-        @keyframes carShake {
-            0% { transform: translateX(-50%) rotate(-2deg);}
-            25% { transform: translateX(-50%) rotate(2deg);}
-            50% { transform: translateX(-50%) rotate(-2deg);}
-            75% { transform: translateX(-50%) rotate(2deg);}
-            100% { transform: translateX(-50%) rotate(0);}
-        }
-        .car-emoji {
-            font-size: 44px; filter: drop-shadow(0 0 9px #00ffd0cc);
-            transition: filter 0.17s;
-        }
-        .obstacle-car {
-            width: 44px; height: 71px; position: absolute; z-index: 10;
-            background: linear-gradient(135deg, #444 50%, #00ffd0 100%);
-            border-radius: 21px 21px 9px 9px; border: 2.5px solid #ffe06633;
-            box-shadow: 0 0 17px #00ffd022;
-            animation: obsGlow 1.3s infinite alternate;
-        }
-        @keyframes obsGlow {
-            0% { box-shadow: 0 0 10px #00ffd033; }
-            100% { box-shadow: 0 0 22px #00ffd066; }
-        }
-        .obstacle-car::before {
-            content: '🚙'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            font-size: 32px; filter: drop-shadow(0 0 2px #ffe06666);
-        }
-        .coin-item {
-            width: 43px; height: 43px; position: absolute; z-index: 12;
-            display: flex; align-items: center; justify-content: center;
-            border-radius: 50%; border: 3px solid #fffbe6; background: #121f2a;
-            box-shadow: var(--coin-glow), 0 0 0 6px #00ffd033 inset;
-            animation: coinSpin 1.5s infinite linear;
-        }
-        @keyframes coinSpin { 0%{transform:scale(1) rotateY(0)} 100%{transform:scale(1.13) rotateY(360deg)} }
-        .coin-pic { width: 34px; height: 34px; border-radius: 50%; }
-        .coin-label {
-            position: absolute; bottom: -21px; left: 50%; transform: translateX(-50%); font-size: 13px;
-            color: #ffe066; background: #212d39cc; border-radius: 9px; padding: 1px 8px;
-            border: 1.3px solid #00ffd099; box-shadow: 0 1px 6px #00ffd044;
-        }
-        .car-select {
-            display: flex; justify-content: center; gap: 18px; margin: 13px 0 9px 0;
-        }
-        .car-choice {
-            width: 52px; height: 75px; border-radius: 17px 17px 11px 11px;
-            border: 3px solid #fff7b5; box-shadow: 0 0 9px #ffe06666;
-            cursor: pointer; display: flex; align-items: center; justify-content: center;
-            background: var(--car1); transition: border 0.19s, background 0.18s;
-            position: relative;
-            margin-bottom: 7px;
-        }
-        .car-choice.selected { border: 3.5px solid #00ffd0; box-shadow: 0 0 14px #00ffd0cc;}
-        .car-choice:nth-child(1) { background: var(--car1);}
-        .car-choice:nth-child(2) { background: var(--car2);}
-        .car-choice:nth-child(3) { background: var(--car3);}
-        .car-choice:nth-child(4) { background: var(--car4);}
-        .car-choice:nth-child(5) { background: var(--car5);}
-        .car-choice .car-emoji { font-size: 33px;}
-        .car-choice .car-label {
-            position: absolute; bottom: -15px; left: 50%; transform: translateX(-50%);
-            color: #fffbe6; font-size: 13px; background: #2c3e508c; border-radius: 7px; padding: 0 7px;
-            border: 1px solid #ffe06688; box-shadow: 0 0 5px #ffe06622;
-        }
-        .high-score-badge {
-            position: absolute; top: 11px; left: 50%; transform: translateX(-50%);
-            background: linear-gradient(45deg, #00ffd0, #ffe066);
-            color: #003; padding: 5px 16px; border-radius: 16px; font-weight: bold; font-size: 15px;
-            z-index: 26; display: none; box-shadow: 0 0 9px #00ffd044;
-        }
-        .leaderboard { margin: 34px auto 10px auto; text-align: center; max-width: 320px;}
-        .leaderboard h3 { color: #ffe066; margin-bottom: 10px; font-size: 1.18rem;}
-        .leaderboard ol { padding: 0 0 0 19px; margin: 0; text-align: start;}
-        .leaderboard li { color:#fffbe7; font-size: 1.09rem; margin-bottom: 4px; }
-        .today-row { color: #00ffd0; font-weight: bold; }
-        @media (max-width: 600px) {
-            .game-container { max-width: 100vw; border-radius: 0; }
-            .game-over, .start-screen, .pause-screen, .daily-locked { max-width: 99vw; }
-        }
-    </style>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@700;400&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <title>لعبة صندوق الحظ 🎁</title>
+  <style>
+    body { font-family: 'Tahoma'; background-color: #f0f0f0; text-align: center; padding-top: 50px; }
+    .box { width: 150px; height: 150px; background-color: #ccc; display: inline-block; margin: 20px; border-radius: 15px; cursor: pointer; transition: 0.3s; }
+    .box:hover { transform: scale(1.05); }
+    #result { font-size: 24px; margin-top: 30px; }
+  </style>
 </head>
 <body>
-    <div class="stars" id="stars"></div>
-    <div class="game-container" id="gameContainer">
-        <div class="road" id="road"></div>
-        <div class="ui-overlay">
-            <div class="ui-top">
-                <div class="score">🪙 <span id="score">0</span></div>
-                <div class="level">🚀 <span id="level">1</span></div>
-            </div>
-            <div class="ui-bottom" style="display: flex; justify-content: space-between; align-items: center; font-size: 14px;">
-                <div class="health-bar" id="healthBar">
-                    <span class="health-heart">💠</span>
-                </div>
-            </div>
-        </div>
-        <div class="high-score-badge" id="highScoreBadge" style="display:none;">
-            🏅 رقمك اليومي: <span id="highScoreValue">0</span>
-        </div>
-        <button class="pause-btn" id="pauseBtn" onclick="togglePause()">⏸️</button>
-        <div class="player-car" id="playerCar" data-emoji="🚗"><span class="car-emoji" id="carEmoji">🚗</span></div>
-        <!-- Start Screen -->
-        <div class="start-screen" id="startScreen">
-            <h1>🚗✨ جامع العملات الأسطوري</h1>
-            <div style="margin: 0 0 18px 0; font-size: 17px; color: #00ffd0; font-weight:bold;">
-                تحدي يومي واحد فقط<br>في عالم نجوم وسحر وسرعة!<br>كم عملة ستجمع؟
-            </div>
-            <div class="car-select" id="carSelect">
-                <div class="car-choice selected" data-car="0"><span class="car-emoji">🚗</span><div class="car-label">كلاسيك</div></div>
-                <div class="car-choice" data-car="1"><span class="car-emoji">🚙</span><div class="car-label">جبل</div></div>
-                <div class="car-choice" data-car="2"><span class="car-emoji">🏎️</span><div class="car-label">سباق</div></div>
-                <div class="car-choice" data-car="3"><span class="car-emoji">🚕</span><div class="car-label">تاكسي</div></div>
-                <div class="car-choice" data-car="4"><span class="car-emoji">🚓</span><div class="car-label">شرطة</div></div>
-            </div>
-            <button class="btn" id="startBtn" onclick="startGame()">🚦 ابدأ التحدي</button>
-            <div class="leaderboard" id="leaderboardBox"></div>
-        </div>
-        <!-- Locked Screen -->
-        <div class="daily-locked" id="lockedScreen">
-            <h2>⏳ انتهت محاولتك!</h2>
-            <div style="margin: 13px 0 16px 0;">
-                يمكنك المحاولة مجددًا غدًا.<br>
-                رقمك اليوم: <span id="todayScore">0</span>
-            </div>
-            <div class="leaderboard" id="leaderboardBoxLocked"></div>
-        </div>
-        <!-- Game Over Screen -->
-        <div class="game-over" id="gameOver">
-            <h2>💥 انتهت!</h2>
-            <div style="margin: 10px 0 17px 0;">
-                <div>النقاط اليوم: <span id="finalScore">0</span></div>
-                <div>المستوى: <span id="finalLevel">1</span></div>
-            </div>
-            <button class="btn" onclick="returnToLock()">تم</button>
-        </div>
-        <!-- Pause Screen -->
-        <div class="pause-screen" id="pauseScreen">
-            <h2>⏸️ مؤقت</h2>
-            <button class="btn" onclick="togglePause()">▶️ استئناف</button>
-        </div>
-        <!-- Control Zone -->
-        <div class="control-zone">
-            <button class="control-btn" id="leftBtn">⬅️</button>
-            <div style="flex: 1;"></div>
-            <button class="control-btn" id="rightBtn">➡️</button>
-        </div>
-    </div>
-<audio id="bgSound" src="assets/sound.mp3" loop></audio>
-<script>
-// نجوم في الخلفية
-function createStars() {
-    const cont = document.getElementById('stars');
-    const w = window.innerWidth, h = window.innerHeight;
-    for (let i = 0; i < 110; i++) {
-        let s = document.createElement('div');
-        s.className = "star";
-        s.style.left = Math.random() * w + "px";
-        s.style.top = Math.random() * h + "px";
-        s.style.width = s.style.height = (Math.random()*1.8 + 1.3) + "px";
-        s.style.opacity = Math.random()*0.65 + 0.35;
-        s.style.animationDuration = (Math.random()*2.2 + 1.5) + "s";
-        cont.appendChild(s);
-    }
-}
-createStars();
 
-// الأصوات (غيّر المسار حسب ملفاتك)
-const sounds = {
-    die:      new Audio('assets/die.mp3'),
-    coin:     new Audio('assets/coin.mp3'),
-    crash:    new Audio('assets/crash.mp3'),
-    bg:       document.getElementById('bgSound')
-};
-const coinImage = "assets/coin.png";
-const coinType = { name: "ذهب أسطوري", points: 10, img: coinImage };
+  <h1>🎁 اختر صندوقك!</h1>
 
-// سيارات متنوعة
-const carEmojis = ["🚗","🚙","🏎️","🚕","🚓"];
-const carBgVars = ["var(--car1)","var(--car2)","var(--car3)","var(--car4)","var(--car5)"];
-let selectedCar = 0;
+  <div class="box" onclick="openBox(1)">📦</div>
+  <div class="box" onclick="openBox(2)">📦</div>
+  <div class="box" onclick="openBox(3)">📦</div>
 
-let gameState = {
-    score: 0, level: 1, speed: 4.2, gameRunning: false, gamePaused: false,
-    playerPosition: 50, health: 1, objects: []
-};
-const playerCar = document.getElementById('playerCar');
-const carEmoji = document.getElementById('carEmoji');
-const carSelect = document.getElementById('carSelect');
-const gameContainer = document.getElementById('gameContainer');
-const road = document.getElementById('road');
-const scoreElement = document.getElementById('score');
-const levelElement = document.getElementById('level');
-const healthBar = document.getElementById('healthBar');
-const startScreen = document.getElementById('startScreen');
-const lockedScreen = document.getElementById('lockedScreen');
-const gameOverElement = document.getElementById('gameOver');
-const pauseScreen = document.getElementById('pauseScreen');
-const highScoreBadge = document.getElementById('highScoreBadge');
-const leaderboardBox = document.getElementById('leaderboardBox');
-const leaderboardBoxLocked = document.getElementById('leaderboardBoxLocked');
-const todayScoreEl = document.getElementById('todayScore');
+  <div id="result"></div>
 
-let isDragging = false, dragStartX = 0, playerStartPos = 0;
-let todayKey = getTodayKey();
-let speedUpInterval;
+  <!-- الأصوات -->
+  <audio id="box1" src="sounds/box1.mp3"></audio>
+  <audio id="box2" src="sounds/box2.mp3"></audio>
+  <audio id="box3" src="sounds/box3.mp3"></audio>
+  <audio id="win" src="sounds/win.mp3"></audio>
+  <audio id="lose" src="sounds/lose.mp3"></audio>
+  <audio id="secondChance" src="sounds/second_chance.mp3"></audio>
 
-function getTodayKey() {
-    let now = new Date();
-    return now.getFullYear() + '-' + (now.getMonth()+1).toString().padStart(2,'0') + '-' + now.getDate().toString().padStart(2,'0');
-}
+  <script>
+    let played = false;
 
-function createObject() {
-    let rand = Math.random(), obj;
-    // عملة: 20%  عقبة: 80%
-    if (rand < 0.2) {
-        obj = document.createElement('div');
-        obj.className = 'coin-item'; obj.dataset.type = 'coin';
-        obj.dataset.points = coinType.points;
-        obj.dataset.name = coinType.name;
-        let img = document.createElement('img');
-        img.className = "coin-pic";
-        img.src = coinType.img;
-        img.alt = coinType.name;
-        obj.appendChild(img);
-        let label = document.createElement('span');
-        label.className = "coin-label";
-        label.textContent = coinType.name;
-        obj.appendChild(label);
-    } else {
-        obj = document.createElement('div');
-        obj.className = 'obstacle-car'; obj.dataset.type = 'obstacle';
-    }
-    obj.style.left = (Math.random() * 68 + 14) + '%'; obj.style.top = '-75px';
-    gameContainer.appendChild(obj); gameState.objects.push(obj);
-}
-function updateObjects() {
-    gameState.objects.forEach((obj, i) => {
-        const currentTop = parseFloat(obj.style.top);
-        let moveSpeed = gameState.speed;
-        let newTop = currentTop + moveSpeed;
-        obj.style.top = newTop + 'px';
-        // Collision
-        if (newTop > 420 && newTop < 600) {
-            let objLeft = parseFloat(obj.style.left), playerLeft = gameState.playerPosition;
-            if (Math.abs(objLeft - playerLeft) < 18) handleCollision(obj, i);
-        }
-        if (newTop > 800) removeObject(obj, i);
-    });
-}
-function handleCollision(obj, i) {
-    let type = obj.dataset.type;
-    if (type === 'obstacle') { takeDamage(); removeObject(obj, i);}
-    else if (type === 'coin') { collectCoin(obj); removeObject(obj, i);}
-}
-function takeDamage() {
-    gameState.health--; updateUI();
-    playerCar.classList.add("shake");
-    sounds.crash.currentTime = 0; sounds.crash.play();
-    setTimeout(() => { playerCar.classList.remove("shake"); }, 270);
-    setTimeout(() => { playerCar.style.opacity = '1'; }, 800);
-    if (gameState.health <= 0) gameOver();
-}
-function collectCoin(obj) {
-    let pts = 10;
-    gameState.score += pts;
-    sounds.coin.currentTime = 0; sounds.coin.play();
-    updateUI();
-    // كل 120 نقطة صعود مستوى وزيادة سرعة
-    if (gameState.score >= gameState.level * 120) levelUp();
-}
-function updateUI() {
-    scoreElement.textContent = gameState.score;
-    levelElement.textContent = gameState.level;
-    let hearts = healthBar.querySelectorAll('.health-heart');
-    hearts.forEach((h, i) => { if (i < gameState.health) h.classList.remove('lost'); else h.classList.add('lost'); });
-}
-function removeObject(obj, index) {
-    if (obj.parentNode) obj.parentNode.removeChild(obj); gameState.objects.splice(index, 1);
-}
-function gameOver() {
-    gameState.gameRunning = false;
-    document.getElementById('finalScore').textContent = gameState.score;
-    document.getElementById('finalLevel').textContent = gameState.level;
-    saveTodayScore(gameState.score);
-    drawLeaderboard();
-    sounds.die.currentTime = 0; sounds.die.play();
-    sounds.bg.pause();
-    gameOverElement.style.display = 'block';
-    playerCar.style.opacity = '0.65';
-    clearInterval(speedUpInterval);
-}
-function togglePause() {
-    if (!gameState.gameRunning) return;
-    gameState.gamePaused = !gameState.gamePaused;
-    pauseScreen.style.display = gameState.gamePaused ? 'block' : 'none';
-    document.getElementById('pauseBtn').textContent = gameState.gamePaused ? '▶️' : '⏸️';
-    if (!gameState.gamePaused) gameLoop();
-    if (gameState.gamePaused) sounds.bg.pause(); else sounds.bg.play();
-}
-function startGame() {
-    if (isTodayPlayed()) {
-        showLockedScreen();
+    function openBox(number) {
+      if (played) {
+        document.getElementById("result").innerText = "❗ لقد لعبت بالفعل اليوم!";
         return;
-    }
-    // إعداد السيارة المختارة
-    playerCar.style.background = carBgVars[selectedCar];
-    carEmoji.textContent = carEmojis[selectedCar];
-    // إعادة تعيين اللعبة
-    gameState = { ...gameState, score: 0, level: 1, speed: 4.2, gameRunning: true, gamePaused: false, playerPosition: 50, health: 1, objects: [] };
-    updateUI(); startScreen.style.display = 'none'; gameOverElement.style.display = 'none'; pauseScreen.style.display = 'none'; lockedScreen.style.display = 'none';
-    playerCar.style.left = '50%'; playerCar.style.opacity = '1';
-    clearAllObjects();
-    if (speedUpInterval) clearInterval(speedUpInterval);
-    // صوت الخلفية
-    try { sounds.bg.currentTime = 0; sounds.bg.play(); } catch(e){}
-    speedUpInterval = setInterval(() => {
-        if (gameState.gameRunning && !gameState.gamePaused && gameState.speed < 15) {
-            gameState.speed += 0.12;
-        }
-    }, 1000);
-    gameLoop();
-}
-function returnToLock() { showLockedScreen(); }
-function showLockedScreen() {
-    let todayScore = getTodayScore();
-    todayScoreEl.textContent = todayScore;
-    drawLeaderboard();
-    startScreen.style.display = 'none';
-    gameOverElement.style.display = 'none';
-    pauseScreen.style.display = 'none';
-    lockedScreen.style.display = 'block';
-    clearInterval(speedUpInterval);
-    sounds.bg.pause();
-}
-function clearAllObjects() {
-    gameState.objects.forEach(obj => { if (obj.parentNode) obj.parentNode.removeChild(obj); }); gameState.objects = [];
-}
-function gameLoop() {
-    if (!gameState.gameRunning || gameState.gamePaused) return;
-    let spawnRate = 0.07 + (gameState.level * 0.035);
-    if (Math.random() < spawnRate) createObject();
-    updateObjects();
-    requestAnimationFrame(gameLoop);
-}
-function levelUp() {
-    gameState.level++; gameState.speed += 0.7;
-    updateUI();
-    road.style.animationDuration = Math.max(0.08, 0.6 - (gameState.level * 0.04)) + 's';
-}
-// تحكم
-function initControls() {
-    playerCar.addEventListener('mousedown', startDrag);
-    document.addEventListener('mousemove', drag);
-    document.addEventListener('mouseup', endDrag);
-    playerCar.addEventListener('touchstart', startDrag, { passive: false });
-    document.addEventListener('touchmove', drag, { passive: false });
-    document.addEventListener('touchend', endDrag, { passive: false });
-    document.getElementById('leftBtn').addEventListener('touchstart', e => { e.preventDefault(); movePlayer('left'); });
-    document.getElementById('rightBtn').addEventListener('touchstart', e => { e.preventDefault(); movePlayer('right'); });
-    document.addEventListener('keydown', e => {
-        if (e.key === 'ArrowLeft' || e.key.toLowerCase() === 'a') movePlayer('left');
-        else if (e.key === 'ArrowRight' || e.key.toLowerCase() === 'd') movePlayer('right');
-        else if (e.key === ' ' || e.key === 'Escape') { e.preventDefault(); togglePause(); }
-    });
-    // اختيار السيارة
-    carSelect.querySelectorAll('.car-choice').forEach(choice=>{
-        choice.onclick = ()=>{
-            carSelect.querySelectorAll('.car-choice').forEach(c=>c.classList.remove('selected'));
-            choice.classList.add('selected');
-            selectedCar = parseInt(choice.getAttribute('data-car'));
-        };
-    });
-}
-function startDrag(e) {
-    if (!gameState.gameRunning || gameState.gamePaused) return;
-    isDragging = true;
-    dragStartX = e.clientX || (e.touches && e.touches[0].clientX);
-    playerStartPos = gameState.playerPosition;
-}
-function drag(e) {
-    if (!isDragging || !gameState.gameRunning || gameState.gamePaused) return;
-    let clientX = e.clientX || (e.touches && e.touches[0].clientX);
-    let deltaX = clientX - dragStartX;
-    let containerWidth = gameContainer.offsetWidth;
-    let percentageMove = (deltaX / containerWidth) * 100;
-    let newPosition = playerStartPos + percentageMove;
-    newPosition = Math.max(12, Math.min(88, newPosition));
-    gameState.playerPosition = newPosition;
-    playerCar.style.left = gameState.playerPosition + '%';
-}
-function endDrag() { isDragging = false; }
-function movePlayer(dir) {
-    if (!gameState.gameRunning || gameState.gamePaused) return;
-    let moveAmount = 14;
-    if (dir === 'left' && gameState.playerPosition > 12) gameState.playerPosition -= moveAmount;
-    else if (dir === 'right' && gameState.playerPosition < 88) gameState.playerPosition += moveAmount;
-    gameState.playerPosition = Math.max(12, Math.min(88, gameState.playerPosition));
-    playerCar.style.left = gameState.playerPosition + '%';
-}
-// حفظ واسترجاع النقاط اليومية
-function saveTodayScore(score) {
-    let board = getLeaderboard();
-    board[todayKey] = score;
-    localStorage.setItem("dailyLeaderboard", JSON.stringify(board));
-}
-function getTodayScore() {
-    let board = getLeaderboard();
-    return board[todayKey] || 0;
-}
-function isTodayPlayed() {
-    let board = getLeaderboard();
-    return !!board[todayKey];
-}
-function getLeaderboard() {
-    let data = localStorage.getItem("dailyLeaderboard");
-    return data ? JSON.parse(data) : {};
-}
-function drawLeaderboard() {
-    let board = getLeaderboard();
-    let arr = Object.entries(board)
-        .map(([date, score]) => ({date, score: parseInt(score)}))
-        .sort((a, b) => b.date.localeCompare(a.date));
-    let html = "<h3>لوحة صدارة الأيام السابقة</h3><ol>";
-    arr.forEach(row => {
-        let isToday = row.date === todayKey;
-        html += `<li class="${isToday ? 'today-row' : ''}">${row.date}: <b>${row.score}</b></li>`;
-    });
-    html += "</ol>";
-    leaderboardBox.innerHTML = html;
-    leaderboardBoxLocked.innerHTML = html;
-    let today = arr.find(x=>x.date === todayKey);
-    if (today) {
-        highScoreBadge.style.display = 'block';
-        document.getElementById('highScoreValue').textContent = today.score;
-    }
-}
+      }
 
-document.addEventListener('DOMContentLoaded', () => {
-    drawLeaderboard();
-    initControls();
-    if (isTodayPlayed()) showLockedScreen();
-});
-document.addEventListener('touchmove', e => { if (gameState.gameRunning) e.preventDefault(); }, { passive: false });
-</script>
+      // تشغيل صوت فتح الصندوق المناسب
+      document.getElementById("box" + number).play();
+
+      // تحديد الحظ عشوائيًا
+      const luck = Math.random();
+
+      setTimeout(() => {
+        if (luck < 0.4) {
+          document.getElementById("lose").play();
+          document.getElementById("result").innerText = "❌ لا حظ اليوم!";
+        } else if (luck < 0.7) {
+          document.getElementById("win").play();
+          document.getElementById("result").innerText = "💰 ربحت 50 نقطة!";
+        } else if (luck < 0.9) {
+          document.getElementById("win").play();
+          document.getElementById("result").innerText = "💰 ربحت 100 نقطة!";
+        } else {
+          document.getElementById("secondChance").play();
+          document.getElementById("result").innerText = "🔁 فرصة ثانية! اختر صندوقاً آخر.";
+          played = false; // يعطي فرصة ثانية
+          return;
+        }
+
+        played = true;
+      }, 800); // تأخير بسيط بعد فتح الصندوق
+    }
+  </script>
+
 </body>
 </html>
